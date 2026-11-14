@@ -43,9 +43,13 @@
           <button type="button" data-size="2" role="radio" aria-label="Larger text">A</button>
           <button type="button" data-size="3" role="radio" aria-label="Largest text">A</button>
         </div>
-        <button type="button" id="contrast" class="contrast-btn" aria-pressed="false">
+        <button type="button" id="contrast" class="contrast-btn" aria-pressed="false" aria-label="High contrast">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
           <span>High contrast</span>
+        </button>
+        <button type="button" id="account-btn" class="account-btn" aria-haspopup="dialog" aria-label="Sign in or create a free profile">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span id="account-label">Sign in</span>
         </button>
       </div>
     </div>
@@ -68,6 +72,7 @@
 
         <form id="find" class="finder" autocomplete="off" aria-labelledby="finder-title">
           <h2 id="finder-title" class="finder-title">Plan your round</h2>
+          <div id="profile-bar" class="profile-bar" hidden></div>
           <label for="message" class="finder-label">Who's playing, when, and what's hard for them?</label>
           <div class="input-wrap">
             <textarea id="message" name="message" rows="4" maxlength="800" required aria-describedby="finder-hint"
@@ -170,6 +175,118 @@
       </div>
     </section>
   </main>
+
+  <!-- ACCOUNT + PROFILE DIALOG -->
+  <dialog id="account-dialog" class="dialog" aria-labelledby="dialog-title">
+    <div class="dialog-head">
+      <h2 id="dialog-title" class="dialog-title">Your golfer profile</h2>
+      <button type="button" class="dialog-close" data-close aria-label="Close">×</button>
+    </div>
+
+    <!-- Signed out: create account / sign in -->
+    <section id="auth-view" class="dialog-body">
+      <p class="dialog-lede">Save your group and needs once. Every search starts from them. <strong>Free for everyone.</strong> No email, no credit card.</p>
+      <div class="auth-tabs" role="tablist" aria-label="Account">
+        <button type="button" role="tab" id="tab-signup" aria-selected="true" aria-controls="auth-form">Create free account</button>
+        <button type="button" role="tab" id="tab-login" aria-selected="false" aria-controls="auth-form">Sign in</button>
+      </div>
+      <form id="auth-form" class="auth-form" role="tabpanel" autocomplete="on">
+        <label for="auth-user">Username</label>
+        <input id="auth-user" name="username" autocomplete="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_.\-]{3,30}" aria-describedby="user-hint">
+        <p id="user-hint" class="field-hint">3–30 letters or numbers. Don't use your real name if you'd rather not.</p>
+        <label for="auth-pass">Password</label>
+        <input id="auth-pass" name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="200" aria-describedby="pass-hint">
+        <p id="pass-hint" class="field-hint">At least 8 characters. There's no email reset, so pick one you'll remember.</p>
+        <p id="auth-error" class="form-error" role="alert" hidden></p>
+        <button type="submit" id="auth-submit" class="btn btn-green btn-block">Create my free account</button>
+      </form>
+      <p class="guest-line">Rather not make an account? <button type="button" id="guest-btn" class="link-btn">Save a profile on this device only</button></p>
+    </section>
+
+    <!-- Profile form (signed in, or guest) -->
+    <form id="profile-form" class="dialog-body profile-form" hidden>
+      <p id="profile-status" class="dialog-lede"></p>
+
+      <fieldset class="pf-group">
+        <legend>About your group</legend>
+        <div class="pf-grid">
+          <div><label for="pf-name">Name or group name</label><input id="pf-name" name="display_name" maxlength="40" placeholder="Tyler &amp; Dad"></div>
+          <div><label for="pf-town">Home town</label><input id="pf-town" name="home_town" maxlength="40" placeholder="New Haven"></div>
+        </div>
+        <p class="pf-label" id="lbl-players">Usual number of players</p>
+        <div class="seg" role="radiogroup" aria-labelledby="lbl-players">
+          <label><input type="radio" name="usual_players" value="1"><span>1</span></label>
+          <label><input type="radio" name="usual_players" value="2"><span>2</span></label>
+          <label><input type="radio" name="usual_players" value="3"><span>3</span></label>
+          <label><input type="radio" name="usual_players" value="4"><span>4</span></label>
+        </div>
+        <div class="pf-grid">
+          <div><label for="pf-budget">Usual budget per player ($)</label><input id="pf-budget" name="usual_budget" type="number" min="0" max="500" step="5" inputmode="numeric" placeholder="No limit"></div>
+          <div><label for="pf-time">Favorite time to play</label>
+            <select id="pf-time" name="preferred_time">
+              <option value="any">Any time</option><option value="early">Early (before 8 AM)</option><option value="morning">Morning (8–11)</option>
+              <option value="midday">Midday (11–1)</option><option value="afternoon">Afternoon (1–4)</option><option value="twilight">Twilight (after 4)</option>
+            </select></div>
+        </div>
+        <p class="pf-label" id="lbl-holes">Usual round</p>
+        <div class="seg" role="radiogroup" aria-labelledby="lbl-holes">
+          <label><input type="radio" name="holes" value="either"><span>Either</span></label>
+          <label><input type="radio" name="holes" value="9"><span>9 holes</span></label>
+          <label><input type="radio" name="holes" value="18"><span>18 holes</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="pf-group">
+        <legend>What's hard for the most limited player?</legend>
+        <p class="pf-label" id="lbl-walk">Walking</p>
+        <div class="cards" role="radiogroup" aria-labelledby="lbl-walk">
+          <label><input type="radio" name="walking_ability" value="full"><span><b>No limits</b>Can walk 18 holes</span></label>
+          <label><input type="radio" name="walking_ability" value="limited"><span><b>Limited</b>Rides a cart, can walk short stretches</span></label>
+          <label><input type="radio" name="walking_ability" value="minimal"><span><b>Minimal</b>Needs to drive close to the ball and green</span></label>
+        </div>
+        <p class="pf-label" id="lbl-terrain">Hills</p>
+        <div class="cards" role="radiogroup" aria-labelledby="lbl-terrain">
+          <label><input type="radio" name="terrain" value="any"><span><b>Hills are fine</b></span></label>
+          <label><input type="radio" name="terrain" value="avoid_steep"><span><b>No steep hills</b>Knees, hips, back, heart</span></label>
+          <label><input type="radio" name="terrain" value="flat_only"><span><b>Flat only</b>Wheelchair, walker, balance</span></label>
+        </div>
+        <p class="pf-label" id="lbl-carry">Shots over water or ravines</p>
+        <div class="cards" role="radiogroup" aria-labelledby="lbl-carry">
+          <label><input type="radio" name="forced_carries" value="any"><span><b>No problem</b></span></label>
+          <label><input type="radio" name="forced_carries" value="avoid_long"><span><b>Avoid long ones</b>Hits under ~150 yards</span></label>
+          <label><input type="radio" name="forced_carries" value="avoid_all"><span><b>Avoid all</b>Beginners, very short hitters</span></label>
+        </div>
+        <div class="checks">
+          <label><input type="checkbox" name="bunkers" value="avoid_deep"><span>Avoid deep bunkers (hard to climb in and out)</span></label>
+          <label><input type="checkbox" name="cart_near_greens" value="true"><span>Needs the cart close to greens and tees</span></label>
+          <label><input type="checkbox" name="adaptive_cart" value="true"><span>Uses a single-rider / adaptive cart (e.g. SoloRider)</span></label>
+          <label><input type="checkbox" name="shorter_course" value="true"><span>Prefers a shorter course</span></label>
+        </div>
+        <div class="pf-grid">
+          <div><label for="pf-skill">Skill level</label>
+            <select id="pf-skill" name="skill">
+              <option value="unknown">Prefer not to say</option><option value="beginner">Beginner</option><option value="casual">Casual (high handicap)</option>
+              <option value="intermediate">Intermediate (about 10–25)</option><option value="advanced">Advanced (under about 10)</option>
+            </select></div>
+        </div>
+      </fieldset>
+
+      <fieldset class="pf-group">
+        <legend>Anything else?</legend>
+        <label for="pf-notes">A short note about your group (optional)</label>
+        <textarea id="pf-notes" name="notes" maxlength="300" rows="3" placeholder="Usually play with my dad (72, bad left knee). He likes to ride but walks short distances."></textarea>
+        <p class="field-hint">Only share what helps match a course. You can delete everything at any time.</p>
+      </fieldset>
+
+      <p id="profile-error" class="form-error" role="alert" hidden></p>
+      <div class="dialog-actions">
+        <button type="submit" class="btn btn-green">Save profile</button>
+        <button type="button" id="signout-btn" class="btn btn-outline">Sign out</button>
+        <button type="button" id="delete-btn" class="link-btn danger">Delete my account and data</button>
+        <button type="button" id="clear-guest-btn" class="link-btn danger" hidden>Remove profile from this device</button>
+      </div>
+    </form>
+  </dialog>
 
   <footer class="site-footer">
     <div class="wrap footer-grid">

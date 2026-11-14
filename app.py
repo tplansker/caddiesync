@@ -11,23 +11,38 @@ import os
 
 os.environ.setdefault("PYDANTIC_AI_NO_BANNER", "1")
 
-from fastapi import FastAPI, Request
+import time
+from collections import defaultdict, deque
+
+from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from caddiesync import guards
+from caddiesync import accounts, guards
 from caddiesync.config import DAILY_BUDGET_USD, MODEL_NAME, OUTPUT, ROOT, ConfigError
+from caddiesync.models import Profile
 from caddiesync.pipeline import Blocked, search
 from caddiesync.tools import join_waitlist, load_courses, read_json
 
 log = logging.getLogger("caddiesync")
 app = FastAPI(title="CaddieSync", docs_url=None, redoc_url=None)
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
+accounts.init_db()
+COOKIE = "cs_session"
 
 
 class SearchIn(BaseModel):
     message: str = Field(max_length=4_000)
+    use_profile: bool = True
+    # Browser copy of a profile, used only when the visitor is not signed in (guest, or account was reset).
+    profile: Profile | None = None
+
+
+class Credentials(BaseModel):
+    username: str = Field(max_length=30)
+    password: str = Field(max_length=200)
+    profile: Profile | None = None  # on sign-up: restore the browser's saved copy
 
 
 class WaitlistIn(BaseModel):
@@ -50,10 +65,126 @@ def health() -> dict:
     return {"ok": True, "model": MODEL_NAME, "courses": len(load_courses())}
 
 
+# ---------- Accounts (free: username + password, no email) ----------
+
+_attempts: dict[str, deque[float]] = defaultdict(deque)
+
+
+def _json_only(request: Request) -> None:
+    """Changes to accounts must be JSON. Together with SameSite=Lax cookies this blocks cross-site form posts."""
+    if not request.headers.get("content-type", "").startswith("application/json"):
+        raise HTTPException(415, "Send JSON.")
+
+
+def _too_many_attempts(request: Request) -> bool:
+    q, now = _attempts[_visitor(request)], time.time()
+    while q and now - q[0] > 600:
+        q.popleft()
+    q.append(now)
+    return len(q) > 10  # 10 sign-in / sign-up tries per 10 minutes per visitor
+
+
+def _set_session(response: Response, request: Request, user_id: int) -> None:
+    secure = request.headers.get("x-forwarded-proto", request.url.scheme) == "https"
+    response.set_cookie(COOKIE, accounts.new_session(user_id), max_age=accounts.SESSION_DAYS * 86400,
+                        httponly=True, samesite="lax", secure=secure, path="/")
+
+
+def current_user(request: Request) -> tuple[int, str] | None:
+    return accounts.user_for_token(request.cookies.get(COOKIE))
+
+
+def _me(user: tuple[int, str]) -> dict:
+    p = accounts.get_profile(user[0])
+    return {"signed_in": True, "username": user[1], "profile": p.model_dump() if p else None}
+
+
+@app.get("/api/me")
+def api_me(request: Request) -> dict:
+    user = current_user(request)
+    return _me(user) if user else {"signed_in": False}
+
+
+@app.post("/api/signup", dependencies=[Depends(_json_only)])
+def api_signup(body: Credentials, request: Request, response: Response) -> dict:
+    if _too_many_attempts(request):
+        raise HTTPException(429, "Too many tries. Please wait a few minutes.")
+    try:
+        uid = accounts.create_user(body.username.strip(), body.password)
+    except accounts.AccountError as e:
+        raise HTTPException(400, str(e)) from None
+    if body.profile:
+        accounts.save_profile(uid, _checked(body.profile))
+    _set_session(response, request, uid)
+    return _me((uid, body.username.strip()))
+
+
+@app.post("/api/login", dependencies=[Depends(_json_only)])
+def api_login(body: Credentials, request: Request, response: Response) -> dict:
+    if _too_many_attempts(request):
+        raise HTTPException(429, "Too many tries. Please wait a few minutes.")
+    try:
+        uid = accounts.verify_user(body.username.strip(), body.password)
+    except accounts.AccountError as e:
+        raise HTTPException(401, str(e)) from None
+    _set_session(response, request, uid)
+    return _me((uid, body.username.strip()))
+
+
+@app.post("/api/logout")
+def api_logout(request: Request, response: Response) -> dict:
+    accounts.end_session(request.cookies.get(COOKIE))
+    response.delete_cookie(COOKIE, path="/")
+    return {"signed_in": False}
+
+
+def _checked(profile: Profile) -> Profile:
+    """Profiles are saved text that later reaches the AI: clean it, and refuse obvious injection attempts."""
+    profile.notes = guards.clean_input(profile.notes)[:300]
+    profile.display_name = guards.clean_input(profile.display_name)[:40]
+    profile.home_town = guards.clean_input(profile.home_town)[:40]
+    flags = guards.scan_for_injection(" ".join((profile.notes, profile.display_name, profile.home_town)))
+    if flags:
+        raise HTTPException(400, "Your profile note can only describe your group and needs. It looks like it "
+                                 f"contains instructions for the AI ({flags[0]}).")
+    return profile
+
+
+@app.put("/api/profile", dependencies=[Depends(_json_only)])
+def api_save_profile(profile: Profile, request: Request) -> dict:
+    user = current_user(request)
+    if not user:
+        raise HTTPException(401, "Sign in to save your profile to your account.")
+    accounts.save_profile(user[0], _checked(profile))
+    return _me(user)
+
+
+@app.post("/api/profile/check", dependencies=[Depends(_json_only)])
+def api_check_profile(profile: Profile) -> dict:
+    """Guests save their profile on their device only; this runs the same checks without storing anything."""
+    return {"profile": _checked(profile).model_dump()}
+
+
+@app.delete("/api/account")
+def api_delete_account(request: Request, response: Response) -> dict:
+    user = current_user(request)
+    if not user:
+        raise HTTPException(401, "You're not signed in.")
+    accounts.delete_user(user[0])
+    response.delete_cookie(COOKIE, path="/")
+    return {"signed_in": False, "deleted": True}
+
+
+# ---------- Search ----------
+
 @app.post("/api/search")
 async def api_search(body: SearchIn, request: Request) -> JSONResponse:
+    profile = None
+    if body.use_profile:
+        user = current_user(request)
+        profile = (accounts.get_profile(user[0]) if user else None) or body.profile
     try:
-        return JSONResponse(await search(body.message, visitor=_visitor(request)))
+        return JSONResponse(await search(body.message, visitor=_visitor(request), profile=profile))
     except Blocked as e:
         return JSONResponse({"error": str(e), "blocked": True}, status_code=429)
     except ConfigError as e:

@@ -81,7 +81,9 @@ form.addEventListener("submit", async (e) => {
   if (!message) { msg.focus(); return; }
   go.disabled = true; go.firstChild.textContent = "Searching… "; results.hidden = true; showProgress();
   try {
-    const r = await fetch("/api/search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message }) });
+    const useProfile = !!(acct.profile && acct.useProfile);
+    const body = { message, use_profile: useProfile, profile: useProfile && !acct.user ? acct.profile : null };
+    const r = await fetch("/api/search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const data = await r.json();
     if (!r.ok) throw new Error(data.error || "Search failed.");
     statusEl.hidden = true; render(data);
@@ -159,6 +161,7 @@ function render(d) {
         <li class="chip">${s.players} player${s.players === 1 ? "" : "s"}</li>${s.max_price_per_player ? `<li class="chip">Up to ${money(s.max_price_per_player)} each</li>` : ""}${needChips(s.needs)}</ul>
     </div></div>
     ${s.note ? `<p class="note-small">${esc(s.note)}</p>` : ""}
+    ${s.used_profile ? `<p class="note-small">Used your saved profile${s.from_profile.length ? ` (kept: ${esc(s.from_profile.join("; "))})` : ""}.</p>` : ""}
     <p class="note">${esc(d.note)}</p>
     ${safety}
     <div class="rec-list">${d.recommendations.map(recCard).join("")}</div>
@@ -206,3 +209,196 @@ fetch("/api/courses").then((r) => r.json()).then((list) => {
     </article>`;
   }).join("");
 }).catch(() => { $("#course-grid").innerHTML = '<p class="muted">Couldn\'t load the course list.</p>'; });
+
+
+/* ---------- Free accounts + saved profile ---------- */
+const acct = { user: null, profile: null, useProfile: store.get("cs-use-profile") !== "0", staleOwner: "" };
+const dlg = $("#account-dialog"), authView = $("#auth-view"), authForm = $("#auth-form"), pform = $("#profile-form");
+let authMode = "signup";
+
+function loadLocal() {
+  try { return { profile: JSON.parse(store.get("cs-profile") || "null"), owner: store.get("cs-profile-owner") || "" }; }
+  catch { return { profile: null, owner: "" }; }
+}
+function saveLocal(profile, owner) { store.set("cs-profile", JSON.stringify(profile)); store.set("cs-profile-owner", owner || ""); }
+function clearLocal() { try { localStorage.removeItem("cs-profile"); localStorage.removeItem("cs-profile-owner"); } catch {} }
+
+function toast(text) {
+  const t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); t.textContent = text;
+  document.body.append(t); setTimeout(() => t.remove(), 3200);
+}
+
+async function api(path, method = "GET", data) {
+  const r = await fetch(path, { method, headers: data ? { "Content-Type": "application/json" } : {}, body: data ? JSON.stringify(data) : undefined });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    const msg = typeof d.detail === "string" ? d.detail : Array.isArray(d.detail) ? "Please check the highlighted fields." : (d.error || "Something went wrong.");
+    throw new Error(msg);
+  }
+  return d;
+}
+
+function needSummary(p) {
+  const out = [];
+  if (p.walking_ability !== "full") out.push(NEED_LABELS.walking_ability[p.walking_ability]);
+  if (p.terrain !== "any") out.push(NEED_LABELS.terrain[p.terrain]);
+  if (p.forced_carries !== "any") out.push(NEED_LABELS.forced_carries[p.forced_carries]);
+  if (p.bunkers === "avoid_deep") out.push("No deep bunkers");
+  if (p.cart_near_greens) out.push("Cart near greens");
+  if (p.adaptive_cart) out.push("Adaptive cart");
+  if (p.shorter_course) out.push("Shorter course");
+  return out;
+}
+
+function renderAccount() {
+  $("#account-label").textContent = acct.user ? acct.user : acct.profile ? "My profile" : "Sign in";
+  $("#account-btn").setAttribute("aria-label", acct.user ? `Your profile, signed in as ${acct.user}` : acct.profile ? "Your profile" : "Sign in or create a free profile");
+  const bar = $("#profile-bar");
+  if (!acct.profile) {
+    bar.hidden = false;
+    bar.className = "profile-cta";
+    bar.innerHTML = `<span>Save your group and needs once and skip retyping them. Free, with no email needed.</span>
+      <button type="button" class="link-btn" data-open-profile>Create a free profile</button>`;
+  } else {
+    const p = acct.profile, chips = needSummary(p);
+    const bits = [`${p.usual_players} player${p.usual_players === 1 ? "" : "s"}`, p.usual_budget ? `up to $${p.usual_budget}` : null,
+      p.preferred_time !== "any" ? WINDOW[p.preferred_time] : null].filter(Boolean).join(" · ");
+    bar.hidden = false; bar.className = "profile-bar";
+    bar.innerHTML = `<div class="pb-top"><div class="pb-who">Using ${esc(p.display_name || "your profile")}<small>${esc(bits)}${acct.user ? "" : " · saved on this device"}</small></div>
+        <div class="pb-actions"><label class="switch"><input type="checkbox" id="use-profile" ${acct.useProfile ? "checked" : ""}> Use it</label>
+        <button type="button" class="link-btn" data-open-profile>Edit</button></div></div>
+      ${chips.length ? `<div class="pb-chips">${chips.map((c) => `<span>${esc(c)}</span>`).join("")}</div>` : ""}
+      ${acct.staleOwner ? `<p class="pb-warn">You're signed out of "${esc(acct.staleOwner)}". Sign in again, or if the account was reset, create it again with the same name and this profile comes back.</p>` : ""}`;
+    $("#use-profile").addEventListener("change", (e) => { acct.useProfile = e.target.checked; store.set("cs-use-profile", e.target.checked ? "1" : "0"); });
+  }
+  $$("[data-open-profile]", bar).forEach((b) => b.addEventListener("click", openDialog));
+}
+
+function fillForm(p) {
+  const f = pform.elements;
+  const d = p || { display_name: "", home_town: "", usual_players: 1, usual_budget: null, preferred_time: "any", holes: "either",
+    walking_ability: "full", terrain: "any", forced_carries: "any", bunkers: "any", cart_near_greens: false, adaptive_cart: false,
+    shorter_course: false, skill: "unknown", notes: "" };
+  f.display_name.value = d.display_name; f.home_town.value = d.home_town; f.usual_budget.value = d.usual_budget ?? "";
+  f.preferred_time.value = d.preferred_time; f.skill.value = d.skill; f.notes.value = d.notes;
+  for (const name of ["usual_players", "holes", "walking_ability", "terrain", "forced_carries"]) {
+    $$(`input[name="${name}"]`, pform).forEach((r) => { r.checked = r.value === String(d[name]); });
+  }
+  f.bunkers.checked = d.bunkers === "avoid_deep";
+  for (const name of ["cart_near_greens", "adaptive_cart", "shorter_course"]) f[name].checked = !!d[name];
+}
+
+function readForm() {
+  const f = pform.elements, radio = (n) => $(`input[name="${n}"]:checked`, pform)?.value;
+  return {
+    display_name: f.display_name.value.trim(), home_town: f.home_town.value.trim(),
+    usual_players: Number(radio("usual_players") || 1), usual_budget: f.usual_budget.value === "" ? null : Number(f.usual_budget.value),
+    preferred_time: f.preferred_time.value, holes: radio("holes") || "either",
+    walking_ability: radio("walking_ability") || "full", terrain: radio("terrain") || "any", forced_carries: radio("forced_carries") || "any",
+    bunkers: f.bunkers.checked ? "avoid_deep" : "any", cart_near_greens: f.cart_near_greens.checked, adaptive_cart: f.adaptive_cart.checked,
+    shorter_course: f.shorter_course.checked, skill: f.skill.value, notes: f.notes.value.trim(),
+  };
+}
+
+function showView(view) {
+  authView.hidden = view !== "auth";
+  pform.hidden = view !== "profile";
+  if (view === "profile") {
+    fillForm(acct.profile);
+    $("#profile-status").innerHTML = acct.user
+      ? `Signed in as <strong>${esc(acct.user)}</strong>. Your profile is saved to your free account and on this device.`
+      : `Saved on <strong>this device only</strong>. <button type="button" class="link-btn" id="make-account">Create a free account</button> to keep it safe.`;
+    $("#signout-btn").hidden = !acct.user; $("#delete-btn").hidden = !acct.user; $("#clear-guest-btn").hidden = !!acct.user || !acct.profile;
+    $("#make-account")?.addEventListener("click", () => { setAuthMode("signup"); showView("auth"); });
+    $("#profile-error").hidden = true;
+  }
+}
+
+function openDialog() {
+  showView(acct.user || acct.profile ? "profile" : "auth");
+  dlg.showModal();
+}
+$("#account-btn").addEventListener("click", openDialog);
+$$("[data-close]", dlg).forEach((b) => b.addEventListener("click", () => dlg.close()));
+dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+
+function setAuthMode(mode) {
+  authMode = mode;
+  $("#tab-signup").setAttribute("aria-selected", String(mode === "signup"));
+  $("#tab-login").setAttribute("aria-selected", String(mode === "login"));
+  $("#auth-submit").textContent = mode === "signup" ? "Create my free account" : "Sign in";
+  $("#auth-pass").autocomplete = mode === "signup" ? "new-password" : "current-password";
+  $("#pass-hint").hidden = mode !== "signup"; $("#user-hint").hidden = mode !== "signup";
+  $("#auth-error").hidden = true;
+}
+$("#tab-signup").addEventListener("click", () => setAuthMode("signup"));
+$("#tab-login").addEventListener("click", () => setAuthMode("login"));
+
+authForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = $("#auth-submit"), err = $("#auth-error");
+  btn.disabled = true; err.hidden = true;
+  try {
+    const local = loadLocal().profile;
+    const d = await api(authMode === "signup" ? "/api/signup" : "/api/login", "POST",
+      { username: $("#auth-user").value.trim(), password: $("#auth-pass").value, profile: authMode === "signup" ? local : null });
+    acct.user = d.username; acct.staleOwner = "";
+    if (d.profile) acct.profile = d.profile;
+    else if (local) { await api("/api/profile", "PUT", local); acct.profile = local; }  // restore browser copy
+    if (acct.profile) saveLocal(acct.profile, acct.user);
+    $("#auth-pass").value = "";
+    renderAccount(); showView("profile");
+    toast(authMode === "signup" ? "Account created. It's free, forever." : `Welcome back, ${acct.user}.`);
+  } catch (ex) { err.textContent = ex.message; err.hidden = false; }
+  finally { btn.disabled = false; }
+});
+
+$("#guest-btn").addEventListener("click", () => showView("profile"));
+
+pform.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const err = $("#profile-error"); err.hidden = true;
+  try {
+    const p = readForm();
+    if (acct.user) { const d = await api("/api/profile", "PUT", p); acct.profile = d.profile; }
+    else { const d = await api("/api/profile/check", "POST", p); acct.profile = d.profile; }
+    saveLocal(acct.profile, acct.user || ""); acct.useProfile = true; store.set("cs-use-profile", "1");
+    renderAccount(); dlg.close(); toast("Profile saved. Your next search will use it.");
+  } catch (ex) { err.textContent = ex.message; err.hidden = false; }
+});
+
+$("#signout-btn").addEventListener("click", async () => {
+  await api("/api/logout", "POST").catch(() => {});
+  clearLocal(); Object.assign(acct, { user: null, profile: null, staleOwner: "" });  // don't leave health info on a shared computer
+  renderAccount(); dlg.close(); toast("Signed out. Your profile was removed from this device.");
+});
+
+$("#delete-btn").addEventListener("click", async () => {
+  if (!confirm("Delete your CaddieSync account and saved profile? This can't be undone.")) return;
+  try {
+    await api("/api/account", "DELETE");
+    clearLocal(); Object.assign(acct, { user: null, profile: null, staleOwner: "" });
+    renderAccount(); dlg.close(); toast("Your account and profile were deleted.");
+  } catch (ex) { const err = $("#profile-error"); err.textContent = ex.message; err.hidden = false; }
+});
+
+$("#clear-guest-btn").addEventListener("click", () => {
+  clearLocal(); acct.profile = null; renderAccount(); dlg.close(); toast("Profile removed from this device.");
+});
+
+(async function initAccount() {
+  const local = loadLocal();
+  try {
+    const me = await api("/api/me");
+    if (me.signed_in) {
+      acct.user = me.username;
+      if (me.profile) acct.profile = me.profile;
+      else if (local.profile) { await api("/api/profile", "PUT", local.profile).catch(() => {}); acct.profile = local.profile; }
+      if (acct.profile) saveLocal(acct.profile, acct.user);
+    } else if (local.profile) {
+      acct.profile = local.profile;
+      acct.staleOwner = local.owner;  // had an account on this device but the session ended or the account was reset
+    }
+  } catch { acct.profile = local.profile; }
+  renderAccount();
+})();

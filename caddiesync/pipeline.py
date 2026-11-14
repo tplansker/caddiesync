@@ -31,7 +31,7 @@ from pydantic_ai.messages import ModelResponse
 from . import guards
 from .agents import agents
 from .config import MODEL_NAME, OUTPUT, dollar_cost
-from .models import AccessibilityAssessment, ConciergeReply, GolferRequest
+from .models import AccessibilityAssessment, ConciergeReply, GolferRequest, Profile
 from .tools import (WINDOWS, append_json, cache_get, cache_put, course_facts, find_tee_times, load_courses,
                     next_weekday, now_iso)
 
@@ -80,7 +80,8 @@ async def _assess(course: dict[str, Any], req: GolferRequest, meter: Meter) -> t
     return result.output, row
 
 
-async def search(message: str, visitor: str = "local", use_cache: bool = True) -> dict[str, Any]:
+async def search(message: str, visitor: str = "local", use_cache: bool = True,
+                 profile: Profile | None = None) -> dict[str, Any]:
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex[:6]
     trace: list[dict[str, Any]] = []
     meter = Meter()
@@ -98,6 +99,11 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True) -
     flags = guards.scan_for_injection(text)
     for f in flags:
         safety.append({"layer": "code: input scan", "event": f"Flagged: {f}"})
+    if profile is not None:  # saved text becomes part of the prompt, so it gets the same checks
+        profile.notes = guards.clean_input(profile.notes)[:300]
+        for f in guards.scan_for_injection(profile.notes):
+            flags.append(f"saved profile note {f}")
+            safety.append({"layer": "code: input scan", "event": f"Flagged in saved profile note: {f}"})
     _step(trace, "Input guard", "code", f"Cleaned input ({len(text)} chars). "
           + (f"Flagged {len(flags)} attack pattern(s)." if flags else "No attack patterns found."), t0, flags=flags)
 
@@ -106,7 +112,8 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True) -
     today = date.today()
     scan_line = f"Automatic safety scan: {'; '.join(flags)}\n" if flags else ""
     prompt = (f"Today is {guards.nice_date(today)}, {today.year} ({today.isoformat()}).\n{scan_line}"
-              f"<golfer_request>\n{text}\n</golfer_request>")
+              + (f"<saved_profile>\n{profile.as_prompt()}\n</saved_profile>\n" if profile else "")
+              + f"<golfer_request>\n{text}\n</golfer_request>")
     result = await agents()["profiler"].run(prompt, usage_limits=guards.PROFILER_LIMITS)
     req: GolferRequest = result.output
     row = meter.add("profiler", result)
@@ -116,6 +123,24 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True) -
     for r in req.refused_requests:
         safety.append({"layer": "AI: profiler", "event": f"Refused: {r}"})
     _step(trace, "Profiler", "ai", f"Understood: {req.group_summary}", t, output=req.model_dump(), usage=row)
+
+    # ---- Saved profile floor (code): a vague message can never loosen saved needs ----
+    profile_notes: list[str] = []
+    if profile is not None:
+        t = time.perf_counter()
+        profile_notes = profile.apply_floor(req.needs)
+        if req.max_price_per_player is None and profile.usual_budget:
+            req.max_price_per_player = profile.usual_budget
+            profile_notes.append(f"budget: up to ${profile.usual_budget:.0f}")
+        if req.time_window == "any" and profile.preferred_time != "any":
+            req.time_window = profile.preferred_time
+            profile_notes.append(f"time: {profile.preferred_time}")
+        if req.holes == "either" and profile.holes != "either":
+            req.holes = profile.holes
+            profile_notes.append(f"holes: {profile.holes}")
+        _step(trace, "Saved profile", "code",
+              ("Kept your saved needs and defaults: " + "; ".join(profile_notes)) if profile_notes
+              else "Your saved needs were already covered by the Profiler.", t)
 
     # ---- Tee-Time Sniper (code) ----
     t = time.perf_counter()
@@ -241,7 +266,8 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True) -
         "searched": {"date": day.isoformat(), "date_label": f"{guards.nice_date(day)}", "note": date_note,
                      "time_window": req.time_window, "players": req.players,
                      "max_price_per_player": req.max_price_per_player, "group": req.group_summary,
-                     "needs": req.needs.model_dump()},
+                     "needs": req.needs.model_dump(), "used_profile": profile is not None,
+                     "from_profile": profile_notes},
         "recommendations": recs, "waitlist_options": waitlist, "other_courses": others,
         "safety": safety, "trace": trace,
         "usage": {**totals, "calls": meter.calls, "analyst_cache_hits": len(hits), "analyst_fresh": len(misses),

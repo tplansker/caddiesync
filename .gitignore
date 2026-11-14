@@ -12,3 +12,4 @@ cache/*.json
 !cache/.gitkeep
 output/*.log
 .claude/
+instance/

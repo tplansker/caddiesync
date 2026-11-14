@@ -39,6 +39,21 @@ If port 8000 is busy: `PORT=8050 python app.py` (Windows PowerShell: `$env:PORT=
 
 See `.env.example`. Never commit a real `.env`.
 
+## Free profiles
+
+Anyone can create a free account (username + password, no email) and save a golfer profile: usual group size,
+budget, time, and physical needs. Every search starts from it, so it's the same each time you sign in. People who
+don't want an account can save a profile on their device only.
+
+- Passwords are hashed with scrypt (Python standard library); sessions are HttpOnly, SameSite cookies.
+- A saved profile's needs are a **floor**: a vague message ("Saturday, 2 of us") can never drop "no steep hills"
+  or "adaptive cart". A switch next to the search box turns the profile off for a different group.
+- Profile notes reach the AI, so they're checked for prompt injection when saved and again on every search.
+- Users can delete their account and all saved data from the profile screen. Signing out clears the device copy.
+- Accounts live in SQLite at `instance/caddiesync.db` (set `CADDIESYNC_DB` to move it). On Render's free plan this
+  file is erased on redeploy; the browser keeps a copy of the profile, and creating the account again with the
+  same name restores it.
+
 ## How it works
 
 ```
@@ -54,16 +69,17 @@ golfer's message
 
 | File | What it does |
 |---|---|
-| `app.py` | FastAPI server and API (`/api/search`, `/api/waitlist`, `/api/stats`) |
+| `app.py` | FastAPI server and API (search, accounts, profile, courses, waitlist, stats) |
 | `caddiesync/agents.py` | The three PydanticAI agents |
 | `caddiesync/prompts/` | Each agent's instructions |
 | `caddiesync/pipeline.py` | Runs one search end to end; logs tokens and the trace |
 | `caddiesync/tools.py` | Course database, Tee-Time Sniper, accessibility cache |
 | `caddiesync/guards.py` | Safety nets: injection scan, fact checks, rate limit, daily budget |
-| `caddiesync/models.py` | Structured outputs for each agent |
+| `caddiesync/models.py` | Structured outputs for each agent, and the saved `Profile` |
+| `caddiesync/accounts.py` | Free accounts, sessions and saved profiles (SQLite) |
 | `data/courses.json` | 15 real public courses near New Haven, with sources |
 | `static/` | The web page |
-| `tests/attack_test.py` | Runs 5 prompt-injection attacks and checks every defense held |
+| `tests/attack_test.py` | Runs 6 prompt-injection attacks (one hidden in a saved profile) and checks every defense held |
 | `tests/cache_test.py` | Same searches with the cache cold vs warm: tokens, cost, same answers |
 
 ## Data, honestly

@@ -96,3 +96,60 @@ class ConciergeReply(BaseModel):
     headline: str = Field(max_length=120)
     picks: list[Pick] = Field(max_length=3, description="Best 1-3 options, best first. Empty if nothing fits.")
     note_to_golfer: str = Field(max_length=400, description="A short friendly note. Mention any refused requests politely.")
+
+
+# ---------- Saved golfer profile (free account, or browser-only copy) ----------
+
+# Order of each need from least to most limiting. Used to keep the stricter of profile vs. message.
+NEED_ORDER = {
+    "walking_ability": ["full", "limited", "minimal"],
+    "terrain": ["any", "avoid_steep", "flat_only"],
+    "forced_carries": ["any", "avoid_long", "avoid_all"],
+    "bunkers": ["any", "avoid_deep"],
+}
+
+
+class Profile(BaseModel):
+    """What a golfer saves once so every search starts from it. Validated on save and on every search."""
+
+    display_name: str = Field(default="", max_length=40)
+    home_town: str = Field(default="", max_length=40)
+    usual_players: int = Field(default=1, ge=1, le=4)
+    usual_budget: float | None = Field(default=None, ge=0, le=500, description="Per player, US dollars.")
+    preferred_time: TimeWindow = "any"
+    holes: Literal["9", "18", "either"] = "either"
+    walking_ability: Literal["full", "limited", "minimal"] = "full"
+    terrain: Literal["any", "avoid_steep", "flat_only"] = "any"
+    forced_carries: Literal["any", "avoid_long", "avoid_all"] = "any"
+    bunkers: Literal["any", "avoid_deep"] = "any"
+    cart_near_greens: bool = False
+    adaptive_cart: bool = False
+    shorter_course: bool = False
+    skill: Literal["beginner", "casual", "intermediate", "advanced", "unknown"] = "unknown"
+    notes: str = Field(default="", max_length=300, description="Free text, e.g. 'Usually play with my dad (72, bad left knee).'")
+
+    def apply_floor(self, needs: GolferNeeds) -> list[str]:
+        """Make `needs` at least as careful as this profile. Returns what changed, in plain words."""
+        changed = []
+        for field, order in NEED_ORDER.items():
+            mine, theirs = getattr(self, field), getattr(needs, field)
+            if order.index(mine) > order.index(theirs):
+                setattr(needs, field, mine)
+                changed.append(f"{field.replace('_', ' ')}: {theirs} -> {mine}")
+        for field in ("cart_near_greens", "adaptive_cart", "shorter_course"):
+            if getattr(self, field) and not getattr(needs, field):
+                setattr(needs, field, True)
+                changed.append(f"{field.replace('_', ' ')}: on")
+        if needs.skill == "unknown" and self.skill != "unknown":
+            needs.skill = self.skill
+            changed.append(f"skill: {self.skill}")
+        return changed
+
+    def as_prompt(self) -> str:
+        """Profile as data for the Profiler. The free-text note is the only part a person typed freely."""
+        d = self.model_dump()
+        note = d.pop("notes")
+        lines = [f"{k}: {v}" for k, v in d.items() if v not in ("", None)]
+        if note:
+            lines.append(f"notes: {note}")
+        return "\n".join(lines)
