@@ -203,7 +203,8 @@ def api_courses() -> list[dict]:
         out.append({k: c.get(k) for k in ("course_id", "name", "town", "state", "lat", "lon", "access", "holes",
                                           "terrain", "price_tier", "map_detail", "total_climb_ft",
                                           "water_carry_holes", "verified_by_phone", "website")}
-                   | {"known": sum(c.get(f) is not None for f in ACCESS_FIELDS), "of": len(ACCESS_FIELDS)})
+                   | {"known": sum(c.get(f) is not None for f in ACCESS_FIELDS), "of": len(ACCESS_FIELDS),
+                      "amen": sorted((c.get("amenities") or {}).keys())})
     return out
 
 

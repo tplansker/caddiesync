@@ -112,9 +112,15 @@ def highlights(c: dict[str, Any]) -> list[str]:
     return out
 
 
+EXTRA_Q = {"driving_range": "Do you have a driving range, and is it covered?", "practice_green": "Is there a practice putting green?",
+           "simulator": "Do you have an indoor simulator for rainy days?", "pro_shop": "Do you have a pro shop, and can we rent clubs?",
+           "food_drink": "Is there a restaurant, bar or snack bar open when we play?"}
+
+
 def call_script(c: dict[str, Any], verify: list[str], req: GolferRequest) -> list[str]:
     """What to ask when you call, built in code from what the data doesn't know."""
     qs = [f"Can you tell me {v.rstrip('.?')}?" for v in verify]
+    qs += [EXTRA_Q[w] for w in req.wants if not (c.get("amenities") or {}).get(w)]
     if req.needs.adaptive_cart and c.get("adaptive_cart") is None:
         qs.append("Do you have a single-rider or adaptive cart (like a SoloRider), or can I bring my own?")
     if req.needs.walking_ability != "full" and c.get("cart_near_greens") is None:
@@ -123,7 +129,7 @@ def call_script(c: dict[str, Any], verify: list[str], req: GolferRequest) -> lis
         qs.insert(0, "Is the course open to the public, and do we need to book ahead?")
     if c.get("price_tier") is None:
         qs.append("What are your current green fees and cart fees?")
-    return list(dict.fromkeys(qs))[:5]
+    return list(dict.fromkeys(qs))[:6]
 
 
 async def search(message: str, visitor: str = "local", use_cache: bool = True,
@@ -220,7 +226,7 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
             radius, widened = min(radius * 2, 60), True
             pool = locator.find(courses, center, radius, req.holes, req.price_tier_max, req.include_private)
     for c in pool:
-        c["pre_score"] = locator.pre_score(c, req.needs)
+        c["pre_score"] = locator.pre_score(c, req.needs, req.wants)
     pool.sort(key=lambda c: (-c["pre_score"], c["distance_mi"]))
     top = pool if named else pool[: max(ANALYZE_TOP, req.rounds + 3)]
     _step(trace, "Course Locator", "code",
@@ -276,11 +282,13 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
              "distance_mi": by_id[cid]["distance_mi"], "holes": by_id[cid].get("holes"), "price_tier": by_id[cid].get("price_tier"),
              "score": assessments[cid]["assessment"]["score"], "verdict": assessments[cid]["assessment"]["verdict"],
              "one_line": assessments[cid]["assessment"]["one_line"], "findings": assessments[cid]["assessment"]["findings"],
-             "verify_with_course": assessments[cid]["assessment"]["verify_with_course"]} for cid in ranked[:8]]
+             "verify_with_course": assessments[cid]["assessment"]["verify_with_course"],
+             "mapped_extras": sorted((by_id[cid].get("amenities") or {}).keys())} for cid in ranked[:8]]
     t = time.perf_counter()
     if view:
         prompt = (f"Group: {req.group_summary}\nNeeds: {req.needs.model_dump_json()}\n"
                   f"Searching: {'a golf trip' if req.trip else 'a round'} near {center['label']}; suggest up to {req.rounds} course(s).\n"
+                  f"Extras they want: {json.dumps(req.wants)}\n"
                   f"refused_requests: {json.dumps(req.refused_requests)}\n\nCandidates:\n{json.dumps(view, indent=1)}")
         try:
             result = await agents()["concierge"].run(prompt, usage_limits=guards.CONCIERGE_LIMITS)
@@ -323,6 +331,7 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
             "directions_url": f"https://www.google.com/maps/dir/?api=1&destination={c['lat']},{c['lon']}",
             "tee_time_search_url": "https://www.google.com/search?q=" + quote_plus(f"{c['name']} {c.get('town') or ''} {c['state']} tee times"),
             "map_detail": c.get("map_detail"), "verified_by_phone": c.get("verified_by_phone", False),
+            "amenities": c.get("amenities") or {}, "wants": req.wants,
             "lat": c["lat"], "lon": c["lon"], "sources": c.get("sources", []),
         })
     picked = {r["course_id"] for r in recs}
@@ -345,7 +354,7 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
         "run_id": run_id, "headline": reply.headline, "note": reply.note_to_golfer,
         "searched": {"place": center["label"], "lat": center["lat"], "lon": center["lon"], "radius_mi": radius,
                      "place_note": place_note, "trip": req.trip, "rounds": req.rounds, "players": req.players,
-                     "holes": req.holes, "price_tier_max": req.price_tier_max, "group": req.group_summary,
+                     "holes": req.holes, "price_tier_max": req.price_tier_max, "group": req.group_summary, "wants": req.wants,
                      "needs": req.needs.model_dump(), "courses_considered": len(pool),
                      "used_profile": profile is not None, "from_profile": profile_notes},
         "recommendations": recs, "other_courses": others, "safety": safety, "trace": trace,

@@ -57,6 +57,10 @@ class GolferRequest(BaseModel):
     price_tier_max: PriceTier | None = Field(
         default=None, description="Most they want to spend: $ = under $40, $$ = $40-75, $$$ = $75-120, $$$$ = over $120 per player. Null if not said.")
     include_private: bool = Field(default=False, description="True only if they say they can play private clubs (member or guest).")
+    wants: list[Literal["driving_range", "practice_green", "simulator", "pro_shop", "food_drink"]] = Field(
+        default_factory=list,
+        description="Extras they asked for: a driving range or warm-up, a putting/practice green, an indoor simulator, "
+        "a pro shop, or food and drinks (restaurant, bar, lunch after). Empty if none mentioned.")
     players: int = Field(ge=1, le=4, description="Number of golfers in the group (1-4).")
     holes: Literal["9", "18", "either"] = "either"
     needs: GolferNeeds = Field(description="Combined needs of the group: use the needs of the most limited player.")

@@ -212,6 +212,53 @@ def nearest_place(lat: float, lon: float, places: list[dict], state: str) -> str
     return best
 
 
+SIM_RE = re.compile(r"simulator|indoor golf|golf lounge|x-?golf|golf studio|trackman|top ?golf", re.I)
+PRACTICE_RE = re.compile(r"practice|putting|chipping|short game", re.I)
+FOOD = {"restaurant": "Restaurant", "bar": "Bar", "pub": "Pub", "cafe": "Café", "fast_food": "Snack bar"}
+
+
+def attach_amenities(courses: list[dict], code: str) -> None:
+    """Driving ranges, golf shops, simulators, food & drink: matched to the course they sit on or right next to (~150 m).
+    A missing amenity means 'not on the map', never 'doesn't exist'."""
+    from shapely.geometry import Point
+    from shapely.strtree import STRtree
+    for c in courses:
+        c["amen"] = {}
+        greens = c["features"].get("green", [])
+        if any(PRACTICE_RE.search(g["tags"].get("name", "") + " " + g["tags"].get("description", "")) for g in greens):
+            c["amen"]["practice_green"] = True
+        if c["features"].get("tee") and len(c["features"].get("hole", [])) and any(
+                PRACTICE_RE.search(t["tags"].get("name", "")) for t in c["features"]["tee"]):
+            c["amen"]["practice_green"] = True
+    f = RAW / f"osm_{code}_amenities.json"
+    areas = [c for c in courses if c["shape"].geom_type in ("Polygon", "MultiPolygon")]
+    if not f.exists() or not areas:
+        return
+    tree = STRtree([c["shape"].buffer(0.0015) for c in areas])
+    for e in json.loads(f.read_text())["elements"]:
+        t = e.get("tags", {})
+        lat, lon = (e.get("lat"), e.get("lon")) if "lat" in e else (e.get("center", {}).get("lat"), e.get("center", {}).get("lon"))
+        if lat is None:
+            continue
+        hits = tree.query(Point(lon, lat), predicate="intersects")
+        if not len(hits):
+            continue
+        a = min((areas[i] for i in hits), key=lambda c: c["shape"].distance(Point(lon, lat)))["amen"]
+        name = t.get("name", "").strip()
+        indoor = t.get("indoor") == "yes" or t.get("covered") == "yes" or "indoor" in name.lower()
+        if t.get("golf") == "driving_range":
+            a["driving_range"] = "covered or indoor" if indoor else a.get("driving_range") or "outdoor"
+        if t.get("shop") == "golf":
+            a["pro_shop"] = name or True
+        if SIM_RE.search(name) or (t.get("sport") == "golf" and t.get("indoor") == "yes"):
+            a["simulator"] = name or True
+        if t.get("amenity") in FOOD:
+            label = FOOD[t["amenity"]]
+            a["food_drink"] = f"{name} ({label.lower()})" if name else label
+        if t.get("building") == "clubhouse":
+            a["clubhouse"] = True
+
+
 def build() -> None:
     elev = json.loads((RAW / "elevation.json").read_text()) if (RAW / "elevation.json").exists() else {}
     places = json.loads((RAW / "places.json").read_text()) if (RAW / "places.json").exists() else []
@@ -223,6 +270,7 @@ def build() -> None:
             continue
         courses, feats = load_state(code)
         assign_features(courses, feats)
+        attach_amenities(courses, code)
         for c in courses:
             tags = c["tags"]
             pt = c["shape"].representative_point()
@@ -242,6 +290,7 @@ def build() -> None:
                 "website": tags.get("website") or tags.get("contact:website") or tags.get("url"),
                 "phone": tags.get("phone") or tags.get("contact:phone"),
                 "booking_url": None, "price_tier": None, "price_note": None, "notes": None,
+                "amenities": c.get("amen", {}),
                 "verified_by_phone": False,
                 "sources": [f"https://www.openstreetmap.org/{c['osm']}"],
             }

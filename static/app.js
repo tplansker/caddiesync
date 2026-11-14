@@ -19,6 +19,7 @@ const NEED_LABELS = {
 const VERDICT = { great_fit: "Great fit", workable: "Workable", poor_fit: "Poor fit" };
 const TERRAIN = { flat: "Flat", gently_rolling: "Gently rolling", hilly: "Hilly", severe: "Very hilly" };
 const TERRAIN_COLOR = { flat: "#2e9d5a", gently_rolling: "#9ccc3d", hilly: "#f0a020", severe: "#d6453d" };
+const AMEN = { driving_range: "Driving range", practice_green: "Practice green", simulator: "Simulator", pro_shop: "Pro shop", food_drink: "Food & drink", clubhouse: "Clubhouse" };
 const ACCESS = { public: "Public", municipal: "Public (town)", semi_private: "Semi-private", private: "Private", unknown: "Access: check" };
 const TILES = { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' };
 let lastResult = null;
@@ -108,6 +109,12 @@ function needChips(needs) {
 function recCard(r, i) {
   const fx = { helps: "✓", hurts: "!", neutral: "•" };
   const findings = r.findings.map((f) => `<li><span class="fx ${f.effect}" aria-label="${f.effect}">${fx[f.effect]}</span><span>${esc(f.finding)}</span></li>`).join("");
+  const amenEntries = Object.entries(r.amenities || {});
+  const missingWants = (r.wants || []).filter((w) => !(r.amenities || {})[w]);
+  const amenLabel = (k, v) => k === "driving_range" && typeof v === "string" ? `Driving range (${v})` : k === "food_drink" && typeof v === "string" ? v : AMEN[k];
+  const extras = amenEntries.length || missingWants.length ? `<div class="amenities" aria-label="On-site extras">
+      ${amenEntries.map(([k, v]) => `<span class="amen ${(r.wants || []).includes(k) ? "amen-want" : ""}">✓ ${esc(amenLabel(k, v))}</span>`).join("")}
+      ${missingWants.map((w) => `<span class="amen amen-ask">${esc(AMEN[w])}: not on the map, ask</span>`).join("")}</div>` : "";
   const measured = r.highlights.length ? `<div class="measured"><p class="measured-title">Measured from the map</p><ul>${r.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul></div>` : "";
   const script = r.call_script.length ? `<details class="call-script"><summary>What to ask when you call</summary><ol>${r.call_script.map((q) => `<li>${esc(q)}</li>`).join("")}</ol></details>` : "";
   const book = safeUrl(r.booking_url), site = safeUrl(r.website);
@@ -124,6 +131,7 @@ function recCard(r, i) {
       ${r.price_note ? `<p class="price-note">${esc(r.price_note)}</p>` : ""}
       <p class="why">${esc(r.why_it_fits)}</p>
       ${r.heads_up ? `<p class="heads"><b>Heads up:</b> ${esc(r.heads_up)}</p>` : ""}
+      ${extras}
       ${measured}
       <ul class="findings">${findings}</ul>
       ${r.verify_with_course.length ? `<p class="verify"><b>Call to confirm:</b> ${r.verify_with_course.map(esc).join(" · ")}</p>` : ""}
@@ -249,12 +257,14 @@ function courseCard(c) {
     <p class="meta">${esc(c.town || "")}, ${c.state}${c.holes ? ` · ${c.holes} holes` : ""}${c.price_tier ? ` · ${c.price_tier}` : ""}</p>
     <span class="terrain">${c.terrain ? TERRAIN[c.terrain] : c.map_detail === "outline" ? "Not measured" : "Terrain unknown"}</span>
     <div class="known"><div class="known-bar" role="img" aria-label="${c.known} of ${c.of} accessibility facts known"><i style="width:${Math.round((c.known / c.of) * 100)}%"></i></div>
+      ${(c.amen || []).length ? `<p class="meta course-amen">${c.amen.map((a) => esc(AMEN[a] || a)).join(" · ")}</p>` : ""}
       <small>${c.known} of ${c.of} accessibility facts known${c.total_climb_ft != null ? ` · ${tok(c.total_climb_ft)} ft of climbing` : ""}${c.verified_by_phone ? " · verified by phone" : ""}</small></div>
   </article>`;
 }
+let amenFilter = "";
 function filteredCourses() {
   const q = ($("#course-search").value || "").trim().toLowerCase();
-  return allCourses.filter((c) => (!stateFilter || c.state === stateFilter) && (!q || c.name.toLowerCase().includes(q) || (c.town || "").toLowerCase().includes(q)));
+  return allCourses.filter((c) => (!stateFilter || c.state === stateFilter) && (!amenFilter || (c.amen || []).includes(amenFilter)) && (!q || c.name.toLowerCase().includes(q) || (c.town || "").toLowerCase().includes(q)));
 }
 function drawExplorer() {
   const list = filteredCourses();
@@ -266,13 +276,13 @@ function drawExplorer() {
   exploreLayer.clearLayers();
   list.forEach((c) => {
     L.circleMarker([c.lat, c.lon], { radius: 5, weight: 1, color: "#1f3e2d", fillColor: TERRAIN_COLOR[c.terrain] || "#9a9a9a", fillOpacity: 0.9 })
-      .bindPopup(`<b>${esc(c.name)}</b><br>${esc(c.town || "")}, ${c.state}<br>${c.terrain ? TERRAIN[c.terrain] : "Not measured"}${c.total_climb_ft != null ? ` · ${tok(c.total_climb_ft)} ft climb` : ""}${c.holes ? ` · ${c.holes} holes` : ""}`)
+      .bindPopup(`<b>${esc(c.name)}</b><br>${esc(c.town || "")}, ${c.state}<br>${c.terrain ? TERRAIN[c.terrain] : "Not measured"}${c.total_climb_ft != null ? ` · ${tok(c.total_climb_ft)} ft climb` : ""}${c.holes ? ` · ${c.holes} holes` : ""}${(c.amen || []).length ? `<br>${c.amen.map((a) => esc(AMEN[a] || a)).join(" · ")}` : ""}`)
       .addTo(exploreLayer);
   });
   if (stateFilter && list.length) exploreMap.fitBounds(list.map((c) => [c.lat, c.lon]), { padding: [20, 20] });
 }
-$$(".state-chip").forEach((b) => b.addEventListener("click", () => {
-  stateFilter = b.dataset.state; $$(".state-chip").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+$$(".state-chip:not(.amen-chip)").forEach((b) => b.addEventListener("click", () => {
+  stateFilter = b.dataset.state; $$(".state-chip:not(.amen-chip)").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
   if (!stateFilter && exploreMap) exploreMap.fitBounds([[41.0, -73.8], [47.4, -66.9]]);
   drawExplorer();
 }));
@@ -485,3 +495,9 @@ $("#clear-guest-btn").addEventListener("click", () => {
 
 // Printing a trip plan: open every "What to ask when you call" list so it prints too.
 window.addEventListener("beforeprint", () => $$(".call-script").forEach((d) => { d.open = true; }));
+
+document.querySelectorAll(".amen-chip").forEach((b) => b.addEventListener("click", () => {
+  const on = b.getAttribute("aria-pressed") !== "true";
+  document.querySelectorAll(".amen-chip").forEach((x) => x.setAttribute("aria-pressed", "false"));
+  b.setAttribute("aria-pressed", String(on)); amenFilter = on ? b.dataset.amen : ""; drawExplorer();
+}));

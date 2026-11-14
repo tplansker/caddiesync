@@ -56,6 +56,11 @@ Orchards?"), its name as written. Otherwise null.
 **price_tier_max**: Only if they mention cost. "Cheap", "budget", "under $40" = "$"; "under $75" or
 "reasonable" = "$$"; "under $120" = "$$$"; "money's no object" or no limit = null.
 
+**wants**: Extras they mention: "driving_range" (range, hit balls, warm up, bucket of balls), "practice_green"
+(putting green, chipping, short game), "simulator" (indoor golf, simulator, rainy-day option), "pro_shop"
+(pro shop, buy balls or gear, rent clubs), "food_drink" (lunch, dinner, a beer after, restaurant, bar,
+snack bar, clubhouse food). Empty if none.
+
 **include_private**: true only if they say they can play private clubs (they are a member or a member's
 guest). Otherwise false.
 

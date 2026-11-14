@@ -100,9 +100,10 @@ ORDER = {"terrain": ["flat", "gently_rolling", "hilly", "severe"], "forced_carri
          "bunkers": ["few", "moderate", "many"]}
 
 
-def pre_score(c: dict[str, Any], needs: Any) -> float:
-    """Rule-based estimate (0-100) used only to choose which courses the AI analyzes. Not shown as the final score."""
-    s = 100.0
+def pre_score(c: dict[str, Any], needs: Any, wants: list[str] | None = None) -> float:
+    """Rule-based estimate (0-100) used only to choose which courses the AI analyzes. Not shown as the final score.
+    Wanted extras (range, food...) add a small boost; accessibility always dominates."""
+    s = 100.0 + 4 * sum(1 for w in (wants or []) if (c.get("amenities") or {}).get(w))
     t = c.get("terrain")
     if needs.terrain != "any":
         s -= 12 if t is None else {"flat_only": [0, 15, 40, 60], "avoid_steep": [0, 5, 25, 45]}[needs.terrain][ORDER["terrain"].index(t)]
@@ -122,7 +123,7 @@ def pre_score(c: dict[str, Any], needs: Any) -> float:
         s -= 15  # little measured data: still possible, but less certain
     if c.get("access") == "unknown":
         s -= 3   # known-public courses win ties; unknown ones may be private clubs
-    return max(0.0, min(100.0, s))
+    return max(0.0, min(120.0, s))
 
 
 def find(courses: dict[str, dict[str, Any]], center: dict[str, Any], radius_mi: float, holes: str,

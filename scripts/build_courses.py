@@ -2,6 +2,7 @@
 
     python scripts/build_courses.py fetch       # 1. OpenStreetMap: courses, holes, greens, bunkers, water, cart paths, towns
     python scripts/build_courses.py elevation   # 2. USGS 3DEP elevation (via OpenTopoData) for points along every hole
+    python scripts/build_courses.py amenities   # 2b. OpenStreetMap: driving ranges, golf shops, simulators, food & drink
     python scripts/build_courses.py build       # 3. measure each course and write data/courses.json + data/places.json
 
 Raw downloads are cached in data/raw/ (not committed), so each stage can be re-run without downloading again.
@@ -190,6 +191,40 @@ def assign_features(courses: list[dict], feats: list[dict]) -> None:
             areas[best]["features"][f["kind"]].append(f)
 
 
+# ---------------------------------------------------------------------------------------------- 2b. amenities
+
+def amenities() -> None:
+    """Driving ranges, golf shops, indoor golf / simulators, and food & drink on or next to each course."""
+    for code, name in STATES.items():
+        out = RAW / f"osm_{code}_amenities.json"
+        if out.exists():
+            print(f"{code}: amenities cached"); continue
+        print(f"{code}: downloading amenities for {name}...", flush=True)
+        q = f"""[out:json][timeout:240];
+area["name"="{name}"]["admin_level"="4"]["boundary"="administrative"]->.s;
+way["leisure"="golf_course"](area.s)->.c;
+.c map_to_area->.ca;
+(
+  nwr["golf"="driving_range"](area.s);
+  nwr["leisure"="golf_course"]["golf"="driving_range"](area.s);
+  nwr["shop"="golf"](area.s);
+  nwr["sport"="golf"]["indoor"="yes"](area.s);
+  nwr["leisure"~"^(indoor_golf|sports_centre|sports_hall)$"]["sport"="golf"](area.s);
+  nwr["name"~"[Ss]imulator|[Ii]ndoor [Gg]olf|[Gg]olf [Ll]ounge|X-?[Gg]olf|[Gg]olf [Ss]tudio"](area.s);
+  nwr["amenity"~"^(restaurant|bar|cafe|pub|fast_food)$"](area.ca);
+  nwr["building"="clubhouse"](area.ca);
+);
+out center tags;"""
+        try:
+            data = overpass(q, attempts=4)
+        except RuntimeError:
+            print(f"{code}: amenities query kept failing; amenities will show as not mapped", flush=True)
+            data = {"elements": []}
+        out.write_text(json.dumps(data))
+        print(f"{code}: {len(data['elements'])} amenity elements", flush=True)
+        time.sleep(12)
+
+
 # ---------------------------------------------------------------------------------------------- 2. elevation
 
 ELEV_CACHE = RAW / "elevation.json"
@@ -245,6 +280,8 @@ if __name__ == "__main__":
         fetch()
     elif stage == "elevation":
         elevation()
+    elif stage == "amenities":
+        amenities()
     elif stage == "build":
         from build_measure import build  # noqa: E402  (kept in its own file for readability)
         build()
