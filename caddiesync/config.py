@@ -24,6 +24,10 @@ load_dotenv(ROOT.parent / ".env")
 
 REQUIRED_MODEL = "gpt-6-luna"  # the only model allowed on the course PORTKEY_API_KEY
 MODEL_NAME = os.getenv("OPENAI_MODEL", REQUIRED_MODEL).strip() or REQUIRED_MODEL
+if os.getenv("PORTKEY_API_KEY", "").strip() and MODEL_NAME != REQUIRED_MODEL:
+    # The course key only allows gpt-6-luna. A stale OPENAI_MODEL in someone's .env must not break the app.
+    print(f"[caddiesync] OPENAI_MODEL='{MODEL_NAME}' is not allowed on the course key; using {REQUIRED_MODEL}.")
+    MODEL_NAME = REQUIRED_MODEL
 PORTKEY_BASE_URL = os.getenv("PORTKEY_BASE_URL", "https://api.portkey.ai/v1").strip()
 PORTKEY_FORCE_REFRESH = os.getenv("PORTKEY_FORCE_REFRESH", "true").strip().lower() != "false"
 DAILY_BUDGET_USD = float(os.getenv("DAILY_BUDGET_USD", "2.00"))
@@ -53,9 +57,6 @@ def build_model() -> Any:
     portkey_key = os.getenv("PORTKEY_API_KEY", "").strip()
     openai_key = os.getenv("OPENAI_API_KEY", "").strip()
     if portkey_key:
-        if MODEL_NAME != REQUIRED_MODEL:  # the course key only allows gpt-6-luna; don't crash on a stale .env
-            print(f"[caddiesync] OPENAI_MODEL='{MODEL_NAME}' is not allowed on the course key; using {REQUIRED_MODEL}.")
-            return OpenAIResponsesModel(REQUIRED_MODEL, provider=OpenAIProvider(openai_client=_portkey_client(portkey_key)))
         client = _portkey_client(portkey_key)
     elif openai_key:
         client = AsyncOpenAI(api_key=openai_key, timeout=120)
