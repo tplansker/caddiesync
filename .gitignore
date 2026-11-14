@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+# Runtime files the app writes. The app recreates them on start.
+output/*.json
+!output/.gitkeep
+cache/*.json
+!cache/.gitkeep
+output/*.log
+.claude/

@@ -1,0 +1,539 @@
+[
+ {
+  "course_id": "alling",
+  "name": "Alling Golf Club (Alling Memorial)",
+  "town": "New Haven",
+  "access": "municipal",
+  "holes": 18,
+  "par": 72,
+  "yardage_forward": 5191,
+  "yardage_back": 6348,
+  "slope_forward": null,
+  "terrain": null,
+  "terrain_note": null,
+  "walkability": null,
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": null,
+  "bunkers": null,
+  "notes": "City-owned course. Carts are extra (about $23 per person in public listings).",
+  "phone": "203-946-8014",
+  "website": null,
+  "weekday_rate_usd": [
+   35,
+   45
+  ],
+  "weekend_rate_usd": [
+   45,
+   55
+  ],
+  "sources": [
+   "https://stymie.golf/golf-courses/connecticut/new-haven-county/new-haven/alling-memorial-golf-course",
+   "https://greenfeetracker.com/ct/new-haven/alling-golf-club"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "great_river",
+  "name": "Great River Golf Club",
+  "town": "Milford",
+  "access": "semi_private",
+  "holes": 18,
+  "par": 72,
+  "yardage_forward": null,
+  "yardage_back": 7100,
+  "slope_forward": null,
+  "terrain": null,
+  "terrain_note": "Tom Fazio design (2001) along the Housatonic River; undulating parkland, reviewers mention several slopes to climb.",
+  "walkability": "moderate",
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": "some",
+  "bunkers": null,
+  "notes": "One of the hardest public tests in CT from the back tees (slope about 146-152). Wind off the river; at least one reviewer mentions a carry over marsh.",
+  "phone": null,
+  "website": null,
+  "weekday_rate_usd": [
+   75,
+   95
+  ],
+  "weekend_rate_usd": [
+   95,
+   125
+  ],
+  "sources": [
+   "https://fairwayfinder.io/connecticut/milford/great-river-golf-club",
+   "https://sacredheartpioneers.com/facilities/great-river-golf-club/14"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "orange_hills",
+  "name": "Orange Hills Country Club",
+  "town": "Orange",
+  "access": "public",
+  "holes": 18,
+  "par": 71,
+  "yardage_forward": null,
+  "yardage_back": 6511,
+  "slope_forward": null,
+  "terrain": null,
+  "terrain_note": null,
+  "walkability": null,
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": null,
+  "bunkers": null,
+  "notes": "Family-owned Geoffrey Cornish layout, open year-round. Reviewers mention good pace of play.",
+  "phone": "203-795-4161",
+  "website": "https://www.orangehillscountryclub.com",
+  "weekday_rate_usd": [
+   40,
+   55
+  ],
+  "weekend_rate_usd": [
+   55,
+   70
+  ],
+  "sources": [
+   "https://www.golfpass.com/courses/4409-orange-hills-country-club/scorecard-and-layout",
+   "https://www.golfdigest.com/courses/ct/orange-hills-country-club-orange-hills"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "the_vue",
+  "name": "The VUE (formerly Laurel View CC)",
+  "town": "Hamden",
+  "access": "public",
+  "holes": 18,
+  "par": 72,
+  "yardage_forward": null,
+  "yardage_back": 6924,
+  "slope_forward": null,
+  "terrain": "gently_rolling",
+  "terrain_note": "Rolling fairways lined with large trees.",
+  "walkability": null,
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": null,
+  "bunkers": null,
+  "notes": "Geoffrey Cornish design (1969); long from the back tees.",
+  "phone": null,
+  "website": null,
+  "weekday_rate_usd": [
+   40,
+   55
+  ],
+  "weekend_rate_usd": [
+   55,
+   70
+  ],
+  "sources": [
+   "https://www.golfpass.com/courses/4367-the-vue/scorecard-and-layout",
+   "https://www.1golf.eu/en/club/the-vue-formerly-laurel-view-country-club/"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "lyman_jones",
+  "name": "Lyman Orchards – Jones Course",
+  "town": "Middlefield",
+  "access": "public",
+  "holes": 18,
+  "par": 72,
+  "yardage_forward": null,
+  "yardage_back": null,
+  "slope_forward": null,
+  "terrain": "hilly",
+  "terrain_note": "Front nine has dramatically rolling hills; back nine is flatter, through woods and wetlands with some water and a covered bridge.",
+  "walkability": "hard",
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": "some",
+  "bunkers": null,
+  "notes": "Robert Trent Jones Sr. design (1969).",
+  "phone": null,
+  "website": null,
+  "weekday_rate_usd": [
+   50,
+   65
+  ],
+  "weekend_rate_usd": [
+   70,
+   90
+  ],
+  "sources": [
+   "https://www.golfadvisor.com/courses/344-jones-at-lyman-orchards-golf-club"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "lyman_player",
+  "name": "Lyman Orchards – Player Course",
+  "town": "Middlefield",
+  "access": "public",
+  "holes": 18,
+  "par": 71,
+  "yardage_forward": null,
+  "yardage_back": 6600,
+  "slope_forward": null,
+  "terrain": "gently_rolling",
+  "terrain_note": "Routed through the orchards over gently rolling hills.",
+  "walkability": null,
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": null,
+  "bunkers": "moderate",
+  "notes": "Gary Player design (1994). Over 30 bunkers around small greens; reviewers call it more target golf.",
+  "phone": null,
+  "website": null,
+  "weekday_rate_usd": [
+   50,
+   65
+  ],
+  "weekend_rate_usd": [
+   70,
+   90
+  ],
+  "sources": [
+   "https://www.golfpass.com/travel-advisor/courses/343-player-at-lyman-orchards-golf-club"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "lyman_apple",
+  "name": "Lyman Orchards – Apple Nine",
+  "town": "Middlefield",
+  "access": "public",
+  "holes": 9,
+  "par": 29,
+  "yardage_forward": null,
+  "yardage_back": null,
+  "slope_forward": null,
+  "terrain": null,
+  "terrain_note": null,
+  "walkability": null,
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": null,
+  "bunkers": null,
+  "notes": "Short 9-hole course (2012): seven par 3s and two par 4s. Good for beginners and short-game practice.",
+  "phone": null,
+  "website": null,
+  "weekday_rate_usd": [
+   18,
+   24
+  ],
+  "weekend_rate_usd": [
+   22,
+   28
+  ],
+  "sources": [
+   "https://www.golfadvisor.com/courses/32103-apple-nine-at-lyman-orchards-golf-club/"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "tashua_knolls",
+  "name": "Tashua Knolls",
+  "town": "Trumbull",
+  "access": "municipal",
+  "holes": 18,
+  "par": 72,
+  "yardage_forward": null,
+  "yardage_back": null,
+  "slope_forward": null,
+  "terrain": null,
+  "terrain_note": null,
+  "walkability": null,
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": null,
+  "bunkers": null,
+  "notes": "Town course (1976). Slope from the back tees about 125-133.",
+  "phone": "203-452-5186",
+  "website": "https://www.tashuaknolls.com",
+  "weekday_rate_usd": [
+   40,
+   50
+  ],
+  "weekend_rate_usd": [
+   50,
+   62
+  ],
+  "sources": [
+   "https://www.1golf.eu/en/club/tashua-knolls-golf-course",
+   "https://18birdies.com/golf-courses/club/9289f890-86ac-11e4-8c28-020000005b00/tashua-knolls-golf-course"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "tashua_glen",
+  "name": "Tashua Glen (9-hole executive)",
+  "town": "Trumbull",
+  "access": "municipal",
+  "holes": 9,
+  "par": 33,
+  "yardage_forward": null,
+  "yardage_back": 2184,
+  "slope_forward": null,
+  "terrain": null,
+  "terrain_note": null,
+  "walkability": null,
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": null,
+  "bunkers": null,
+  "notes": "Short executive nine next to Tashua Knolls; listed as the easiest course in Fairfield County by slope on one site.",
+  "phone": "203-452-5186",
+  "website": "https://www.tashuaknolls.com",
+  "weekday_rate_usd": [
+   18,
+   22
+  ],
+  "weekend_rate_usd": [
+   20,
+   26
+  ],
+  "sources": [
+   "https://www.golfpass.com/courses/25512-tashua-knolls-golf-club-tashua-glen/scorecard-and-layout",
+   "https://stymie.golf/rankings/easiest-courses-in-connecticut/fairfield-county"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "fairchild_red",
+  "name": "Fairchild Wheeler – Red Course",
+  "town": "Fairfield (Bridgeport)",
+  "access": "municipal",
+  "holes": 18,
+  "par": 72,
+  "yardage_forward": null,
+  "yardage_back": 6568,
+  "slope_forward": null,
+  "terrain": "gently_rolling",
+  "terrain_note": "Mostly flat and open, but one reviewer says holes 1, 9, 10 and 18 are very hilly.",
+  "walkability": null,
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": null,
+  "bunkers": null,
+  "notes": "City of Bridgeport course. More forgiving and open than the Black; popular with beginners and casual golfers.",
+  "phone": null,
+  "website": null,
+  "weekday_rate_usd": [
+   35,
+   45
+  ],
+  "weekend_rate_usd": [
+   45,
+   55
+  ],
+  "sources": [
+   "https://www.golfadvisor.com/courses/4344-red-at-d-fairchild-wheeler-golf-course/",
+   "https://ctvisit.com/listings/d-fairchild-wheeler-golf-course"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "fairchild_black",
+  "name": "Fairchild Wheeler – Black Course",
+  "town": "Fairfield (Bridgeport)",
+  "access": "municipal",
+  "holes": 18,
+  "par": 71,
+  "yardage_forward": null,
+  "yardage_back": 6559,
+  "slope_forward": null,
+  "terrain": "hilly",
+  "terrain_note": "Winding hills with scenic views; reviewers agree it is hillier and harder than the Red.",
+  "walkability": null,
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": null,
+  "bunkers": null,
+  "notes": "Championship-style municipal course.",
+  "phone": null,
+  "website": null,
+  "weekday_rate_usd": [
+   35,
+   45
+  ],
+  "weekend_rate_usd": [
+   45,
+   55
+  ],
+  "sources": [
+   "https://www.golfpass.com/courses/4346-black-at-d-fairchild-wheeler-golf-course/",
+   "https://ctvisit.com/listings/d-fairchild-wheeler-golf-course"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "hunter",
+  "name": "Hunter Golf Club",
+  "town": "Meriden",
+  "access": "municipal",
+  "holes": 18,
+  "par": 71,
+  "yardage_forward": 5191,
+  "yardage_back": 6509,
+  "slope_forward": null,
+  "terrain": null,
+  "terrain_note": "Views of the trap-rock ridges and Castle Craig.",
+  "walkability": null,
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": "some",
+  "bunkers": null,
+  "notes": "City course (1933). Water hazards and many bunkers. Gold tees about 5,783 yards.",
+  "phone": "203-634-3366",
+  "website": null,
+  "weekday_rate_usd": [
+   35,
+   45
+  ],
+  "weekend_rate_usd": [
+   45,
+   58
+  ],
+  "sources": [
+   "https://www.golfpass.com/courses/4382-hunter-golf-club/scorecard-and-layout",
+   "https://www.1golf.eu/en/club/hunter-memorial-golf-club"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "short_beach",
+  "name": "Short Beach Golf Course",
+  "town": "Stratford",
+  "access": "municipal",
+  "holes": 9,
+  "par": 27,
+  "yardage_forward": 1242,
+  "yardage_back": 1359,
+  "slope_forward": null,
+  "terrain": null,
+  "terrain_note": "Links-style par 3 course near the water.",
+  "walkability": null,
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": "some",
+  "bunkers": null,
+  "notes": "Nine par 3s, mostly short (a couple under 100 yards, one about 200). Very beginner-friendly and inexpensive.",
+  "phone": null,
+  "website": null,
+  "weekday_rate_usd": [
+   14,
+   18
+  ],
+  "weekend_rate_usd": [
+   16,
+   22
+  ],
+  "sources": [
+   "https://par3nearme.com/course/short-beach-golf-course/",
+   "https://golflink.com/golf-courses/ct/stratford/short-beach-golf-course"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "fox_hopyard",
+  "name": "Fox Hopyard Golf Club",
+  "town": "East Haddam",
+  "access": "public",
+  "holes": 18,
+  "par": 71,
+  "yardage_forward": null,
+  "yardage_back": 6912,
+  "slope_forward": null,
+  "terrain": "hilly",
+  "terrain_note": "530 acres of rolling hills and forest with elevation changes on many holes; the 4th is a 202-yard par 3 with a big drop.",
+  "walkability": "hard",
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": "some",
+  "bunkers": null,
+  "notes": "Upscale public course; reviewers describe it as very hilly to walk. Rocks, streams and stone walls.",
+  "phone": "860-434-6644",
+  "website": "https://www.golfthefox.com",
+  "weekday_rate_usd": [
+   65,
+   85
+  ],
+  "weekend_rate_usd": [
+   90,
+   115
+  ],
+  "sources": [
+   "https://www.golfadvisor.com/courses/21875-fox-hopyard-golf-club",
+   "https://golflink.com/golf-courses/ct/east-haddam/fox-hopyard-golf-club"
+  ],
+  "verified_by_phone": false
+ },
+ {
+  "course_id": "hawks_landing",
+  "name": "Hawk's Landing (formerly Pattonbrook)",
+  "town": "Southington",
+  "access": "public",
+  "holes": 18,
+  "par": 70,
+  "yardage_forward": null,
+  "yardage_back": 5825,
+  "slope_forward": null,
+  "terrain": null,
+  "terrain_note": null,
+  "walkability": null,
+  "cart_fairway_access": null,
+  "cart_near_greens": null,
+  "adaptive_cart": null,
+  "forced_carries": null,
+  "water_in_play": null,
+  "bunkers": null,
+  "notes": "Shorter 18 (about 5,800 yards from the tips), walking allowed. Geoffrey Cornish design (1967). Reviewers call the 9th one of the toughest par 3s in the state.",
+  "phone": null,
+  "website": null,
+  "weekday_rate_usd": [
+   35,
+   45
+  ],
+  "weekend_rate_usd": [
+   45,
+   58
+  ],
+  "sources": [
+   "https://www.golfpass.com/courses/4432-hawks-landing-country-club/scorecard-and-layout",
+   "https://www.golflink.com/golf-courses/ct/southington/hawk-s-landing-country-club"
+  ],
+  "verified_by_phone": false
+ }
+]

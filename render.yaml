@@ -1,0 +1,21 @@
+# Render Blueprint: one free web service runs the FastAPI app and serves the UI.
+# PORTKEY_API_KEY is entered in the Render dashboard (sync: false), never committed.
+services:
+  - type: web
+    name: caddiesync
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips '*'
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: OPENAI_MODEL
+        value: gpt-6-luna
+      - key: PORTKEY_FORCE_REFRESH
+        value: "true"
+      - key: DAILY_BUDGET_USD
+        value: "2.00"
+      - key: PORTKEY_API_KEY
+        sync: false
