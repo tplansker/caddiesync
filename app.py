@@ -63,6 +63,22 @@ async def api_search(body: SearchIn, request: Request) -> JSONResponse:
         return JSONResponse({"error": "Something went wrong while searching. Please try again."}, status_code=500)
 
 
+ACCESS_FIELDS = ("terrain", "walkability", "cart_fairway_access", "cart_near_greens", "adaptive_cart", "forced_carries", "bunkers")
+
+
+@app.get("/api/courses")
+def api_courses() -> list[dict]:
+    """Public course facts for the 'The courses' section, with how many accessibility facts are known."""
+    out = []
+    for c in load_courses().values():
+        known = [f for f in ACCESS_FIELDS if c.get(f) is not None]
+        out.append({k: c.get(k) for k in ("course_id", "name", "town", "access", "holes", "par", "terrain",
+                                          "terrain_note", "website", "phone", "verified_by_phone")}
+                   | {"known_access_facts": len(known), "total_access_facts": len(ACCESS_FIELDS),
+                      "sources": len(c.get("sources") or [])})
+    return sorted(out, key=lambda c: c["name"])
+
+
 @app.post("/api/waitlist")
 def api_waitlist(body: WaitlistIn) -> JSONResponse:
     try:
