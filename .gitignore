@@ -13,3 +13,4 @@ cache/*.json
 output/*.log
 .claude/
 instance/
+data/raw/

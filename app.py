@@ -23,7 +23,7 @@ from caddiesync import accounts, guards
 from caddiesync.config import DAILY_BUDGET_USD, MODEL_NAME, OUTPUT, ROOT, ConfigError
 from caddiesync.models import Profile
 from caddiesync.pipeline import Blocked, search
-from caddiesync.tools import join_waitlist, load_courses, read_json
+from caddiesync.tools import load_courses, read_json
 
 log = logging.getLogger("caddiesync")
 app = FastAPI(title="CaddieSync", docs_url=None, redoc_url=None)
@@ -45,11 +45,6 @@ class Credentials(BaseModel):
     profile: Profile | None = None  # on sign-up: restore the browser's saved copy
 
 
-class WaitlistIn(BaseModel):
-    slot_id: str = Field(max_length=80)
-    players: int = Field(ge=1, le=4)
-
-
 def _visitor(request: Request) -> str:
     fwd = request.headers.get("x-forwarded-for", "")
     return fwd.split(",")[0].strip() or (request.client.host if request.client else "unknown")
@@ -62,7 +57,9 @@ def index() -> FileResponse:
 
 @app.get("/api/health")
 def health() -> dict:
-    return {"ok": True, "model": MODEL_NAME, "courses": len(load_courses())}
+    courses = load_courses().values()
+    return {"ok": True, "model": MODEL_NAME, "courses": len(courses),
+            "holes_measured": sum(c.get("holes_mapped") or 0 for c in courses if c.get("total_climb_ft") is not None)}
 
 
 # ---------- Accounts (free: username + password, no email) ----------
@@ -194,28 +191,20 @@ async def api_search(body: SearchIn, request: Request) -> JSONResponse:
         return JSONResponse({"error": "Something went wrong while searching. Please try again."}, status_code=500)
 
 
-ACCESS_FIELDS = ("terrain", "walkability", "cart_fairway_access", "cart_near_greens", "adaptive_cart", "forced_carries", "bunkers")
+ACCESS_FIELDS = ("terrain", "walkability", "forced_carries", "bunkers", "cartpath_to_green_yd",
+                 "cart_near_greens", "adaptive_cart")
 
 
 @app.get("/api/courses")
 def api_courses() -> list[dict]:
-    """Public course facts for the 'The courses' section, with how many accessibility facts are known."""
+    """Every course, lightly: for the map and the course explorer. Full facts stay server-side."""
     out = []
     for c in load_courses().values():
-        known = [f for f in ACCESS_FIELDS if c.get(f) is not None]
-        out.append({k: c.get(k) for k in ("course_id", "name", "town", "access", "holes", "par", "terrain",
-                                          "terrain_note", "website", "phone", "verified_by_phone")}
-                   | {"known_access_facts": len(known), "total_access_facts": len(ACCESS_FIELDS),
-                      "sources": len(c.get("sources") or [])})
-    return sorted(out, key=lambda c: c["name"])
-
-
-@app.post("/api/waitlist")
-def api_waitlist(body: WaitlistIn) -> JSONResponse:
-    try:
-        return JSONResponse(join_waitlist(body.slot_id, body.players))
-    except ValueError as e:
-        return JSONResponse({"error": str(e)}, status_code=400)
+        out.append({k: c.get(k) for k in ("course_id", "name", "town", "state", "lat", "lon", "access", "holes",
+                                          "terrain", "price_tier", "map_detail", "total_climb_ft",
+                                          "water_carry_holes", "verified_by_phone", "website")}
+                   | {"known": sum(c.get(f) is not None for f in ACCESS_FIELDS), "of": len(ACCESS_FIELDS)})
+    return out
 
 
 @app.get("/api/stats")

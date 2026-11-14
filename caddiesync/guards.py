@@ -1,8 +1,8 @@
 """Safety nets that run in code, before and after the AI agents.
 
-Attacks      - clean_input + scan_for_injection before the Profiler; prices/times never come from a model.
+Attacks      - clean_input + scan_for_injection before the Profiler; course facts, prices and links never come from a model.
 Malfunction  - check_assessment drops findings that cite unknown or made-up course facts;
-               check_picks drops any tee time the Concierge invented.
+               check_picks drops any course the Concierge invented.
 Overspending - per-agent UsageLimits (pipeline.py), a per-visitor rate limit, and a daily dollar budget.
 """
 
@@ -27,7 +27,7 @@ MAX_INPUT_CHARS = 800
 PROFILER_LIMITS = UsageLimits(request_limit=3, total_tokens_limit=12_000)
 ANALYST_LIMITS = UsageLimits(request_limit=3, total_tokens_limit=12_000)
 CONCIERGE_LIMITS = UsageLimits(request_limit=3, total_tokens_limit=16_000)
-MAX_FRESH_ASSESSMENTS = 16  # cap on uncached Course Analyst calls in a single search
+MAX_FRESH_ASSESSMENTS = 12  # cap on uncached Course Analyst calls in a single search
 
 INJECTION_PATTERNS = [
     (r"\b(ignore|disregard|forget|override)\b.{0,40}\b(previous|prior|above|earlier|all|your)\b.{0,20}\b(instructions?|rules|prompts?|directions)", "tries to override the AI's instructions"),
@@ -37,7 +37,10 @@ INJECTION_PATTERNS = [
     (r"\b(bypass|skip|jump|cut|move me to the (front|top))\b.{0,30}\b(wait\s*list|waitlist|line|queue)\b|\b(wait\s*list|waitlist)\b.{0,30}\b(bypass|skip|jump)\b", "asks to skip the waitlist"),
     (r"\b(set(ting)?|chang(e|ing)|mak(e|ing)|overrid(e|ing)|lower(ing)?|drop(ping)?)\b.{0,30}\b(price|rate|fee|cost)s?\b.{0,30}(\$\s*0\b|\bfree\b|\bzero\b|\bto\s*\$?\d)", "asks to change a price"),
     (r"\bfor free\b|\bcomp(ed|limentary)? (round|tee time)\b", "asks for a free round"),
-    (r"</?\s*(system|assistant|instructions?|golfer_request)\s*>", "contains fake control tags"),
+    (r"</?\s*(system|assistant|instructions?|golfer_request|saved_profile)\s*>", "contains fake control tags"),
+    (r"\b(rank|put|place|move|list)\b.{0,40}(\bfirst\b|#\s*1\b|\bnumber one\b|\bat the top\b|\babove (all|every))", "tries to change the rankings"),
+    (r"\b(only|always)\s+(recommend|suggest|show)\b", "tries to change the rankings"),
+    (r"\b(say|tell (them|everyone|users|golfers)|claim|state|pretend)\b.{0,40}\b(is|it's|it is|are)\b.{0,15}\b(flat|accessible|wheelchair|easy|best|ada)\b", "tries to plant a false course fact"),
 ]
 
 
@@ -64,7 +67,7 @@ def nice_time(hhmm: str) -> str:
     return f"{(h - 1) % 12 + 1}:{m:02d} {'AM' if h < 12 else 'PM'}"
 
 
-def resolve_date(value: str | None, today: date, fallback: date) -> tuple[date, str | None]:
+def _unused_resolve_date(value: str | None, today: date, fallback: date) -> tuple[date, str | None]:
     """Use the Profiler's date only if it is real and within the next 30 days."""
     try:
         day = date.fromisoformat(value) if value else None
@@ -82,8 +85,10 @@ def _critical_unknowns(needs: Any, facts: dict[str, Any]) -> list[tuple[str, int
     out = []
     if needs.terrain != "any" and facts.get("terrain") is None:
         out.append(("terrain", 70, "how hilly the course is"))
-    if needs.walking_ability != "full" and facts.get("cart_fairway_access") is None and facts.get("walkability") is None:
-        out.append(("cart_fairway_access", 75, "whether carts can drive to the ball"))
+    if needs.forced_carries != "any" and facts.get("forced_carries") is None:
+        out.append(("forced_carries", 80, "whether any shots must carry over water"))
+    if needs.walking_ability != "full" and facts.get("walkability") is None and facts.get("total_climb_ft") is None:
+        out.append(("walkability", 75, "how much walking and climbing the round involves"))
     if needs.cart_near_greens and facts.get("cart_near_greens") is None:
         out.append(("cart_near_greens", 70, "how close carts can get to greens"))
     if needs.adaptive_cart and facts.get("adaptive_cart") is None:
@@ -126,13 +131,13 @@ def check_assessment(a: AccessibilityAssessment, facts: dict[str, Any], needs: A
 
 
 def check_picks(reply: ConciergeReply, candidate_ids: set[str]) -> tuple[ConciergeReply, list[str]]:
-    """Keep only picks whose slot_id came from the Sniper. A model cannot add a tee time that does not exist."""
+    """Keep only picks whose course_id was scored this run. A model cannot add a course that was not analyzed."""
     notes, kept, seen = [], [], set()
     for p in reply.picks:
-        if p.slot_id not in candidate_ids:
-            notes.append(f"dropped a pick with an unknown tee time id '{p.slot_id[:60]}'")
-        elif p.slot_id not in seen:
-            seen.add(p.slot_id)
+        if p.course_id not in candidate_ids:
+            notes.append(f"dropped a pick with an unknown course id '{p.course_id[:60]}'")
+        elif p.course_id not in seen:
+            seen.add(p.course_id)
             kept.append(p)
     reply.picks = kept
     return reply, notes

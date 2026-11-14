@@ -421,3 +421,74 @@ html[data-contrast="high"] .toast { background: #ffe500; color: #000; }
   .dialog-body { padding: 20px 18px 24px; }
   .dialog-head { padding: 16px 18px; }
 }
+
+/* ---------- Course map explorer ---------- */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.explorer { display: grid; gap: 18px; }
+.explorer-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+.explorer-controls input[type="search"] { flex: 1 1 260px; min-height: 50px; padding: 10px 16px; border: 2px solid var(--line); border-radius: 999px; background: var(--white); color: var(--ink); font: 400 1rem/1.4 var(--text); }
+.explorer-controls input[type="search"]:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 4px rgba(31, 62, 45, 0.18); }
+.state-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.state-chip { min-width: 48px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--green); background: transparent; color: var(--green); font: 800 0.82rem/1 var(--display); letter-spacing: 0.06em; cursor: pointer; }
+.state-chip[aria-pressed="true"] { background: var(--green); color: var(--cream); }
+html[data-contrast="high"] .state-chip { border-color: #fff; color: #fff; } html[data-contrast="high"] .state-chip[aria-pressed="true"] { background: #ffe500; color: #000; }
+.legend { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0; padding: 0; font-size: 0.84rem; color: var(--muted); }
+.legend li { display: flex; align-items: center; gap: 6px; }
+.legend i { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #1f3e2d; display: inline-block; }
+.course-map, .results-map { height: 460px; border-radius: 18px; border: 1.5px solid var(--line); overflow: hidden; background: #dfe8d8; z-index: 0; }
+.results-map { height: 340px; margin: 0 0 22px; }
+.list-more { grid-column: 1 / -1; }
+.leaflet-container { font: 400 0.9rem/1.4 var(--text); }
+.leaflet-popup-content { font-size: 0.92rem; }
+.pin-num span { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--green); color: var(--lime); border: 2px solid var(--lime); font: 800 0.9rem/1 var(--display); box-shadow: 0 3px 10px rgba(0,0,0,.35); }
+
+/* ---------- Result card additions ---------- */
+.rec-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.price-note { font-size: 0.88rem; color: var(--muted); margin: -6px 0 14px; }
+.verified { color: var(--good); font-weight: 700; }
+.measured { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; margin: 6px 0 12px; }
+.measured-title { font: 800 0.72rem/1.2 var(--display); letter-spacing: 0.12em; text-transform: uppercase; color: var(--green-700); margin: 0 0 6px; }
+html[data-contrast="high"] .measured-title { color: #ffe500; }
+.measured ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; font-size: 0.95rem; }
+.call-script { margin-top: 14px; border: 1.5px dashed var(--green-500); border-radius: 12px; padding: 10px 14px; }
+.call-script summary { cursor: pointer; font-weight: 700; color: var(--ink); }
+.call-script ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+.result-tools { display: flex; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 900px) { .rec-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .course-map { height: 360px; } }
+
+/* ---------- Print: a clean trip plan ---------- */
+@media print {
+  .announce, .site-header, .hero, .status-band, #who, #how, #courses, #about, .site-footer, .result-tools, .rec-actions,
+  details.panel, .results-map, .safety, .sub, .skip { display: none !important; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .results-band { padding: 0; }
+  .rec { break-inside: avoid; border: 1px solid #999; grid-template-columns: 1fr 140px; }
+  .rec-side { background: #fff; color: #000; border-left: 1px solid #999; }
+  .ring { background: none; } .ring span { background: #fff; color: #000; }
+  .call-script { border-color: #999; } .call-script[open] summary, .call-script summary { list-style: none; }
+  .call-script ol { display: block; }
+}
+
+/* ---------- Dark header for the lime + cream logo ---------- */
+.site-header { background: rgba(15, 20, 15, 0.95); border-bottom-color: rgba(198, 242, 78, 0.18); }
+.brand img { height: 46px; }
+.main-nav a { color: var(--cream); }
+.main-nav a:hover { border-bottom-color: var(--lime); color: #fff; }
+.size-switch { border-color: rgba(246, 242, 230, 0.45); }
+.size-switch button { color: var(--cream); }
+.size-switch button[aria-checked="true"] { background: var(--lime); color: var(--lime-ink); }
+.contrast-btn { border-color: rgba(246, 242, 230, 0.45); color: var(--cream); }
+.contrast-btn[aria-pressed="true"] { background: var(--lime); color: var(--lime-ink); }
+.account-btn { background: var(--lime); color: var(--lime-ink); }
+.account-btn:hover { background: #d4ff63; }
+.footer-logo { width: min(320px, 100%); }
+html[data-contrast="high"] .site-header { background: #000; border-bottom: 1px solid #fff; }
+html[data-contrast="high"] .site-header .main-nav a { color: #fff; }
+html[data-contrast="high"] .site-header .size-switch, html[data-contrast="high"] .site-header .contrast-btn { border-color: #fff; }
+html[data-contrast="high"] .site-header .size-switch button { background: #000; color: #fff; }
+html[data-contrast="high"] .site-header .size-switch button[aria-checked="true"],
+html[data-contrast="high"] .site-header .contrast-btn[aria-pressed="true"],
+html[data-contrast="high"] .site-header .account-btn { background: #ffe500; color: #000; }
+html[data-contrast="high"] .site-header .contrast-btn { color: #fff; }
+html[data-contrast="high"] .footer-logo, html[data-contrast="high"] .brand img { filter: none; }
+@media (max-width: 600px) { .brand img { height: 34px; } }

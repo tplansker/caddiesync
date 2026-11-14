@@ -1,0 +1,192 @@
+[
+ {
+  "osm_name": "Alling Memorial Golf Course",
+  "price_tier": "$$",
+  "price_note": "About $40 weekend walking, cart about $23 extra; senior rate about $30 (listings conflict).",
+  "booking_url": "https://chronogolf.ca/club/alling-memorial-golf-course",
+  "phone": "203-946-8014",
+  "website": null,
+  "terrain_note": null,
+  "notes": "City-owned course. Carts are extra (about $23 per person in public listings).",
+  "sources": [
+   "https://stymie.golf/golf-courses/connecticut/new-haven-county/new-haven/alling-memorial-golf-course",
+   "https://greenfeetracker.com/ct/new-haven/alling-golf-club"
+  ],
+  "access": "municipal"
+ },
+ {
+  "osm_name": "Great River Golf Club",
+  "price_tier": "$$$$",
+  "price_note": "Roughly $130-140 on weekends, cart included (reviewer and listing reports; call to confirm).",
+  "booking_url": "https://www.golfnow.com/courses/1504915-great-river-golf-club-details",
+  "phone": "203-876-8051",
+  "website": null,
+  "terrain_note": "Tom Fazio design (2001) along the Housatonic River; undulating parkland, reviewers mention several slopes to climb.",
+  "notes": "One of the hardest public tests in CT from the back tees (slope about 146-152). Wind off the river; at least one reviewer mentions a carry over marsh.",
+  "sources": [
+   "https://fairwayfinder.io/connecticut/milford/great-river-golf-club",
+   "https://sacredheartpioneers.com/facilities/great-river-golf-club/14",
+   "https://www.golfadvisor.com/courses/28894-great-river-golf-club"
+  ],
+  "access": "semi_private"
+ },
+ {
+  "osm_name": "Orange Hills Country Club",
+  "price_tier": "$$",
+  "price_note": "Listings range from about $30 to $79 for 18 holes; call to confirm.",
+  "booking_url": "https://www.golfnow.com/courses/1028115-orange-hills-country-club-details",
+  "phone": "203-795-4161",
+  "website": "https://www.orangehillscountryclub.com",
+  "terrain_note": null,
+  "notes": "Family-owned Geoffrey Cornish layout, open year-round. Reviewers mention good pace of play.",
+  "sources": [
+   "https://www.golfpass.com/courses/4409-orange-hills-country-club/scorecard-and-layout",
+   "https://www.golfdigest.com/courses/ct/orange-hills-country-club-orange-hills",
+   "https://greenfeetracker.com/ct/new-haven/cheapest-golf-courses"
+  ],
+  "access": "public"
+ },
+ {
+  "osm_name": "The VUE",
+  "price_tier": "$$",
+  "price_note": "About $51 weekend green fee; about $74 with cart on GolfNow deals.",
+  "booking_url": "https://www.golfnow.com/tee-times/facility/5439/search",
+  "phone": "203-281-0670",
+  "website": null,
+  "terrain_note": "Rolling fairways lined with large trees.",
+  "notes": "Geoffrey Cornish design (1969); long from the back tees.",
+  "sources": [
+   "https://www.golfpass.com/courses/4367-the-vue/scorecard-and-layout",
+   "https://www.1golf.eu/en/club/the-vue-formerly-laurel-view-country-club/"
+  ],
+  "access": "public"
+ },
+ {
+  "osm_name": "Lyman Orchards Golf Club",
+  "price_tier": "$$",
+  "price_note": "Jones about $69 and Player about $65 on weekends; the Apple Nine is about $16.",
+  "booking_url": "https://www.chronogolf.ca/club/lyman-orchards-golf-club",
+  "phone": "888-995-9626",
+  "website": null,
+  "terrain_note": "Front nine has dramatically rolling hills; back nine is flatter, through woods and wetlands with some water and a covered bridge. Routed through the orchards over gently rolling hills.",
+  "notes": "Three courses: Jones (hilly front nine), Player (gently rolling), and the short Apple Nine. Robert Trent Jones Sr. design (1969). Gary Player design (1994). Over 30 bunkers around small greens; reviewers call it more target golf. Short 9-hole course (2012): seven par 3s and two par 4s. Good for beginners and short-game practice.",
+  "sources": [
+   "https://www.golfadvisor.com/courses/344-jones-at-lyman-orchards-golf-club",
+   "https://www.golfpass.com/travel-advisor/courses/343-player-at-lyman-orchards-golf-club",
+   "https://www.golfadvisor.com/courses/32103-apple-nine-at-lyman-orchards-golf-club/",
+   "https://www.1golf.eu/en/club/lyman-orchards-golf-club/"
+  ],
+  "access": "public"
+ },
+ {
+  "osm_name": "Tashua Knolls Golf Course",
+  "price_tier": "$$",
+  "price_note": "$60 for 18 holes on weekends (2025 town rate sheet); senior ID discounts on weekdays.",
+  "booking_url": "https://www.tashuaknolls.com/?p=289",
+  "phone": "203-452-5186",
+  "website": "https://www.tashuaknolls.com",
+  "terrain_note": null,
+  "notes": "Town course (1976). Slope from the back tees about 125-133.",
+  "sources": [
+   "https://www.1golf.eu/en/club/tashua-knolls-golf-course",
+   "https://18birdies.com/golf-courses/club/9289f890-86ac-11e4-8c28-020000005b00/tashua-knolls-golf-course",
+   "https://www.tashuaknolls.com/wp-content/uploads/2024/02/2024-Rate-Sheet-Tashua-Knolls-Golf-Course.pdf"
+  ],
+  "access": "municipal"
+ },
+ {
+  "osm_name": "Tashua Glen Golf Course",
+  "price_tier": "$",
+  "price_note": "$23 for 9 holes on weekends (2025 town rate sheet).",
+  "booking_url": "https://www.tashuaknolls.com/?p=289",
+  "phone": "203-452-5186",
+  "website": "https://www.tashuaknolls.com",
+  "terrain_note": null,
+  "notes": "Short executive nine next to Tashua Knolls; listed as the easiest course in Fairfield County by slope on one site.",
+  "sources": [
+   "https://www.golfpass.com/courses/25512-tashua-knolls-golf-club-tashua-glen/scorecard-and-layout",
+   "https://stymie.golf/rankings/easiest-courses-in-connecticut/fairfield-county",
+   "https://www.tashuaknolls.com/wp-content/uploads/2024/02/2024-Rate-Sheet-Tashua-Knolls-Golf-Course.pdf"
+  ],
+  "access": "municipal"
+ },
+ {
+  "osm_name": "Fairchild Wheeler Golf Course",
+  "price_tier": "$",
+  "price_note": "About $39 on weekends for 18 holes (listing); GolfNow deals around $26-33.",
+  "booking_url": "https://www.teeoff.com/tee-times/facility/8062-fairchild-wheeler-golf-red-course/search",
+  "phone": "203-373-5911",
+  "website": null,
+  "terrain_note": "Mostly flat and open, but one reviewer says holes 1, 9, 10 and 18 are very hilly. Winding hills with scenic views; reviewers agree it is hillier and harder than the Red.",
+  "notes": "Two courses: the Red (more open and forgiving) and the Black (hillier). City of Bridgeport course. More forgiving and open than the Black; popular with beginners and casual golfers. Championship-style municipal course.",
+  "sources": [
+   "https://www.golfadvisor.com/courses/4344-red-at-d-fairchild-wheeler-golf-course/",
+   "https://ctvisit.com/listings/d-fairchild-wheeler-golf-course",
+   "https://www.golfpass.com/courses/4346-black-at-d-fairchild-wheeler-golf-course/",
+   "https://www.1golf.eu/en/club/fairchild-wheeler-golf-course"
+  ],
+  "access": "municipal"
+ },
+ {
+  "osm_name": "Hunter Memorial Golf Course",
+  "price_tier": "$$",
+  "price_note": "About $54 on weekends for 18 holes (listing); call for current rates.",
+  "booking_url": "https://www.golfnow.com/courses/1028071-hunter-memorial-golf-club-details",
+  "phone": "203-634-3366",
+  "website": null,
+  "terrain_note": "Views of the trap-rock ridges and Castle Craig.",
+  "notes": "City course (1933). Water hazards and many bunkers. Gold tees about 5,783 yards.",
+  "sources": [
+   "https://www.golfpass.com/courses/4382-hunter-golf-club/scorecard-and-layout",
+   "https://www.1golf.eu/en/club/hunter-memorial-golf-club"
+  ],
+  "access": "municipal"
+ },
+ {
+  "osm_name": "Short Beach Golf Course",
+  "price_tier": "$",
+  "price_note": "About $16-22 for 9 par-3 holes; resident discounts.",
+  "booking_url": null,
+  "phone": null,
+  "website": null,
+  "terrain_note": "Links-style par 3 course near the water.",
+  "notes": "Nine par 3s, mostly short (a couple under 100 yards, one about 200). Very beginner-friendly and inexpensive.",
+  "sources": [
+   "https://par3nearme.com/course/short-beach-golf-course/",
+   "https://golflink.com/golf-courses/ct/stratford/short-beach-golf-course"
+  ],
+  "access": "municipal"
+ },
+ {
+  "osm_name": "Fox Hopyard Golf Club",
+  "price_tier": "$$$",
+  "price_note": "About $104 on weekends, cart included (Chronogolf average).",
+  "booking_url": "https://chronogolf.ca/club/fox-hopyard-golf-club",
+  "phone": "860-434-6644",
+  "website": "https://www.golfthefox.com",
+  "terrain_note": "530 acres of rolling hills and forest with elevation changes on many holes; the 4th is a 202-yard par 3 with a big drop.",
+  "notes": "Upscale public course; reviewers describe it as very hilly to walk. Rocks, streams and stone walls.",
+  "sources": [
+   "https://www.golfadvisor.com/courses/21875-fox-hopyard-golf-club",
+   "https://golflink.com/golf-courses/ct/east-haddam/fox-hopyard-golf-club",
+   "https://chronogolf.ca/club/fox-hopyard-golf-club"
+  ],
+  "access": "public"
+ },
+ {
+  "osm_name": "Hawk's Landing Golf Club",
+  "price_tier": "$$",
+  "price_note": "About $53 on weekends for 18 holes (listing); about $70 with cart.",
+  "booking_url": "https://www.teeoff.com/tee-times/facility/6245-hawks-landing-country-club/search",
+  "phone": "860-793-6000",
+  "website": null,
+  "terrain_note": null,
+  "notes": "Shorter 18 (about 5,800 yards from the tips), walking allowed. Geoffrey Cornish design (1967). Reviewers call the 9th one of the toughest par 3s in the state.",
+  "sources": [
+   "https://www.golfpass.com/courses/4432-hawks-landing-country-club/scorecard-and-layout",
+   "https://www.golflink.com/golf-courses/ct/southington/hawk-s-landing-country-club",
+   "https://www.1golf.eu/en/club/hawk-s-landing-country-club/"
+  ],
+  "access": "public"
+ }
+]
