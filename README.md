@@ -9,6 +9,7 @@ Massachusetts, Vermont, New Hampshire and Maine, using hills, water carries, bun
 **measured hole by hole** from public map and elevation data. Then three AI agents pick and explain the best fits,
 with a booking link, directions, and a list of what to ask when you call.
 
+- GitHub: https://github.com/tplansker/caddiesync
 - Online app: _(Render link goes here once deployed)_
 - Course: MGT 409 AI Foundations for Managers, final project
 
