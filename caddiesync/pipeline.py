@@ -95,7 +95,14 @@ async def _assess(course: dict[str, Any], req: GolferRequest, meter: Meter) -> t
     facts = course_facts(course)
     prompt = ("Group needs:\n" + req.needs.model_dump_json(indent=1)
               + f"\n\nCourse facts:\n{json.dumps(facts, indent=1)}")
-    result = await agents()["analyst"].run(prompt, usage_limits=guards.ANALYST_LIMITS)
+    for attempt in range(2):  # one retry for transient errors (timeouts, brief gateway errors); never for the content filter
+        try:
+            result = await agents()["analyst"].run(prompt, usage_limits=guards.ANALYST_LIMITS)
+            break
+        except Exception as e:
+            if attempt == 1 or _provider_blocked(e):
+                raise
+            await asyncio.sleep(1.5)
     row = meter.add("course_analyst", result, course["name"])
     return result.output, row
 
@@ -268,7 +275,8 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
     results = await asyncio.gather(*(_assess(by_id[cid], req, meter) for cid in misses), return_exceptions=True)
     for cid, res in zip(misses, results):
         if isinstance(res, BaseException):
-            safety.append({"layer": "code: agent error", "event": f"Course Analyst failed on {by_id[cid]['name']}; skipped it."})
+            safety.append({"layer": "code: agent error",
+                           "event": f"Course Analyst failed on {by_id[cid]['name']} ({type(res).__name__}) after a retry; skipped it."})
             continue
         a, usage_row = res
         a, notes = guards.check_assessment(a, course_facts(by_id[cid]), req.needs)
