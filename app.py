@@ -28,6 +28,17 @@ from caddiesync.tools import load_courses, read_json
 log = logging.getLogger("caddiesync")
 app = FastAPI(title="CaddieSync", docs_url=None, redoc_url=None)
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    """Basic hardening for a public site: no MIME sniffing, no framing by other sites, minimal referrer data."""
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    response.headers.setdefault("Permissions-Policy", "camera=(), geolocation=(), microphone=(self)")
+    return response
 accounts.init_db()
 COOKIE = "cs_session"
 

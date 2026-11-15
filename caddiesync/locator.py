@@ -36,6 +36,13 @@ REGIONS = {
     "mystic": (41.35, -71.97, 20, "CT"), "new england": (43.30, -71.60, 400, None),
 }
 KIND_RANK = {"city": 0, "town": 1, "village": 2, "island": 3}
+# Practice-only places mapped as golf courses (ranges, academies): never recommended as a course to play.
+PRACTICE_ONLY = re.compile(r"practice (facility|center|centre|area)|learning cent|golf dome|driving range|\brange\b|"
+                           r"training (center|facility)|golf (school|academy)", re.I)
+
+
+def is_practice_only(c: dict[str, Any]) -> bool:
+    return bool(PRACTICE_ONLY.search(c.get("name", ""))) and (c.get("holes_mapped") or 0) < 3
 
 
 @lru_cache(maxsize=1)
@@ -131,6 +138,8 @@ def find(courses: dict[str, dict[str, Any]], center: dict[str, Any], radius_mi: 
     out = []
     for c in courses.values():
         if not include_private and c.get("access") == "private":
+            continue
+        if is_practice_only(c):
             continue
         if holes != "either" and c.get("holes") and str(c["holes"]) != holes and not (holes == "18" and c["holes"] > 18):
             continue
