@@ -87,6 +87,13 @@ sent to the AI, and repeat questions come from the cache.
   the steepest stretch (compared with the 8.33% ADA limit for a wheelchair ramp), shots that cross water,
   bunkers within 25 m of the green, and the walk to the next tee. Course labels (flat / gently rolling / hilly /
   very hilly, etc.) come from those numbers with fixed thresholds in `scripts/build_measure.py`.
+- **Coverage (current build).** 851 courses across six states; 808 measured hole by hole (12,561 holes).
+- **On-course extras.** Driving ranges (marked covered/indoor when tagged), practice greens, simulators / indoor
+  golf, pro shops, and restaurants, bars, cafés and snack bars on or next to each course, from OpenStreetMap
+  (`python scripts/build_courses.py amenities`). Ranges are well mapped (372 courses); food and pro shops much less
+  so. A missing extra means "not on the map", so the app says "ask" and adds it to the call list instead of
+  claiming the course has none. Extras give a small ranking boost only when accessibility is close.
+- **Islands.** Courses on Martha's Vineyard, Nantucket, Block Island and Maine islands are flagged "ferry needed".
 - **Limits.** Map quality varies: courses drawn only as an outline get no measurements and are marked "not
   measured". Bunker depth and course rules (cart access near greens, adaptive carts) aren't on any map, so the
   app tells you what to ask. "No water" is only claimed for courses mapped in detail.
@@ -97,7 +104,7 @@ sent to the AI, and repeat questions come from the cache.
   domain), via OpenTopoData. The app never calls these services at runtime; the data is built once.
 
 To refresh the data (not needed to run the app): `pip install -r scripts/requirements-build.txt`, then
-`python scripts/build_courses.py fetch`, `... elevation`, `... build`. Downloads are cached in `data/raw/`.
+`python scripts/build_courses.py fetch`, `... elevation`, `... amenities`, `... build`. Downloads are cached in `data/raw/`.
 
 ## Free profiles
 

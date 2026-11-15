@@ -37,6 +37,16 @@ from .models import AccessibilityAssessment, ConciergeReply, GolferRequest, Pick
 from .tools import append_json, cache_get, cache_put, course_facts, load_courses, now_iso
 
 DEFAULT_PLACE = "New Haven, CT"
+# Courses on islands without a bridge: a trip there means a ferry (or a flight).
+ISLAND_TOWNS = {("MA", t) for t in ("Vineyard Haven", "Tisbury", "Edgartown", "Oak Bluffs", "West Tisbury", "Chilmark",
+                                    "Aquinnah", "Nantucket", "Siasconset")} | {("RI", "New Shoreham"), ("RI", "Block Island"),
+                                    ("ME", "Vinalhaven"), ("ME", "North Haven"), ("ME", "Islesboro"), ("ME", "Chebeague Island")}
+
+
+def needs_ferry(c: dict[str, Any], center: dict[str, Any]) -> bool:
+    island = (c["state"], c.get("town") or "") in ISLAND_TOWNS
+    return island and (c["state"], center["label"].split(",")[0]) not in ISLAND_TOWNS and "vineyard" not in center["label"].lower() \
+        and "nantucket" not in center["label"].lower() and "block island" not in center["label"].lower()
 ANALYZE_TOP = 10
 
 
@@ -283,7 +293,8 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
              "score": assessments[cid]["assessment"]["score"], "verdict": assessments[cid]["assessment"]["verdict"],
              "one_line": assessments[cid]["assessment"]["one_line"], "findings": assessments[cid]["assessment"]["findings"],
              "verify_with_course": assessments[cid]["assessment"]["verify_with_course"],
-             "mapped_extras": sorted((by_id[cid].get("amenities") or {}).keys())} for cid in ranked[:8]]
+             "mapped_extras": sorted((by_id[cid].get("amenities") or {}).keys()),
+             "island_needs_ferry": needs_ferry(by_id[cid], center)} for cid in ranked[:8]]
     t = time.perf_counter()
     if view:
         prompt = (f"Group: {req.group_summary}\nNeeds: {req.needs.model_dump_json()}\n"
@@ -331,7 +342,7 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
             "directions_url": f"https://www.google.com/maps/dir/?api=1&destination={c['lat']},{c['lon']}",
             "tee_time_search_url": "https://www.google.com/search?q=" + quote_plus(f"{c['name']} {c.get('town') or ''} {c['state']} tee times"),
             "map_detail": c.get("map_detail"), "verified_by_phone": c.get("verified_by_phone", False),
-            "amenities": c.get("amenities") or {}, "wants": req.wants,
+            "amenities": c.get("amenities") or {}, "wants": req.wants, "ferry": needs_ferry(c, center),
             "lat": c["lat"], "lon": c["lon"], "sources": c.get("sources", []),
         })
     picked = {r["course_id"] for r in recs}

@@ -143,6 +143,7 @@ function recCard(r, i) {
         ${r.phone ? `<a class="btn btn-outline" href="tel:${esc(r.phone)}">Call ${esc(r.phone)}</a>` : ""}
         <a class="btn btn-outline" href="${esc(r.directions_url)}" target="_blank" rel="noopener">Directions <span aria-hidden="true">↗</span></a>
       </div>
+      ${r.ferry ? '<p class="heads"><b>Ferry needed:</b> this course is on an island. Check ferry times before you plan the day.</p>' : ""}
       ${r.map_detail !== "full" ? '<p class="note-small">This course is only partly mapped, so some facts are unknown.</p>' : ""}
     </div>
     <div class="rec-side">

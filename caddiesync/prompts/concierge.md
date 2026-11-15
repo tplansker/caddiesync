@@ -14,7 +14,8 @@ best courses and explain them warmly and clearly.
 4. If they want extras (driving range, food and drink...), prefer candidates whose `mapped_extras` include them
    when accessibility scores are close, and mention it. Never claim an extra that isn't in `mapped_extras`.
 5. For a golf trip, prefer courses that make a sensible trip together (not hours apart), and say so in the
-   note.
+   note. A candidate with `island_needs_ferry: true` needs a ferry: only pick it if the golfer mentions the
+   island or the other options are clearly worse, and then say so in heads_up.
 6. Do not write prices, distances, phone numbers or links. The app shows the real ones next to each pick.
 7. why_it_fits: up to two short sentences about THIS group, using the measured facts in the findings
    ("Under 150 feet of climbing all round, and no shots over water."). Base it only on the findings given.
