@@ -1,0 +1,7 @@
+{
+  "question": "Which public golf courses near New Haven, Connecticut are flat and easy to walk for my 70-year-old dad who has a bad knee? Give me 3 courses, and for each one the total feet of climbing over the round and how many holes have shots over water.",
+  "answer": "I can\u2019t give trustworthy **feet of climbing** or exact **water-carry hole counts** without course-specific GPS elevation data and a definition of \u201cshots over water\u201d (for example, whether a lateral water hazard counts). Those figures can vary by tees and walking route, so I don\u2019t want to invent them.\n\nFor a first pass, **Alling Memorial Golf Course in New Haven** is the clearest nearby option to investigate for an easier walk. I\u2019d be cautious about recommending **Orange Hills** or **Oak Lane** for a bad knee without checking the actual route; they\u2019re not safe bets for \u201cflat and easy.\u201d\n\nIf you share how far your dad is willing to travel\u2014and whether he\u2019d use a cart\u2014I can narrow down three candidates. For reliable climbing totals, the best check is a GPS walking-route profile for the specific tees; the pro shop can confirm which holes involve water.",
+  "input_tokens": 71,
+  "output_tokens": 704,
+  "cost_usd": 0.000359
+}

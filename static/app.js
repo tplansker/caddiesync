@@ -124,7 +124,7 @@ function recCard(r, i) {
   ];
   return `<article class="rec ${i === 0 ? "rec-best" : ""}" aria-label="${esc(r.course_name)}">
     <div class="rec-main">
-      <span class="rec-flag">${i === 0 ? "Best match" : `Pick ${i + 1}`}</span>
+      <span class="rec-flag ${r.verdict === "poor_fit" ? "rec-flag-poor" : ""}">${r.verdict === "poor_fit" ? "Not a good fit" : i === 0 ? "Best match" : `Pick ${i + 1}`}</span>
       <h3>${esc(r.course_name)}</h3>
       <p class="rec-town">${esc(r.town || "")}, ${esc(r.state)}${r.verified_by_phone ? ' · <span class="verified">Verified by phone</span>' : ""}</p>
       <dl class="rec-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>

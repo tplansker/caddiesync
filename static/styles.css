@@ -512,3 +512,7 @@ h1, h2, h3, .display, .finder-title, .dialog-title, .rec h3, .tile h3, .steps-gr
 .course-amen { font-size: 0.82rem; margin: 0; }
 html[data-contrast="high"] .amen { background: #000; color: #fff; border-color: #fff; }
 html[data-contrast="high"] .amen-want { background: #ffe500; color: #000; }
+
+.rec-flag-poor { background: #fbe1df; color: #7a1a14; }
+html[data-contrast="high"] .rec-flag-poor { background: #000; color: #ff8a80; border: 1px solid #ff8a80; }
+.rec:has(.rec-flag-poor) { border-color: var(--line); }

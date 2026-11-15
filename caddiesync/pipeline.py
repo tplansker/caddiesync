@@ -136,7 +136,7 @@ EXTRA_Q = {"driving_range": "Do you have a driving range, and is it covered?", "
 
 def call_script(c: dict[str, Any], verify: list[str], req: GolferRequest) -> list[str]:
     """What to ask when you call, built in code from what the data doesn't know."""
-    qs = [f"Can you tell me {v.rstrip('.?')}?" for v in verify]
+    qs = [f"Can you tell me {v[:1].lower() + v[1:].rstrip('.?')}?" for v in verify if v]
     qs += [EXTRA_Q[w] for w in req.wants if not (c.get("amenities") or {}).get(w)]
     if req.needs.adaptive_cart and c.get("adaptive_cart") is None:
         qs.append("Do you have a single-rider or adaptive cart (like a SoloRider), or can I bring my own?")

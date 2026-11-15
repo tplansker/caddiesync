@@ -1,0 +1,100 @@
+[
+  {
+    "query": "A course near New Haven for me and my 70-year-old dad. He has a bad knee and can't walk steep hills.",
+    "cold": {
+      "input": 35439,
+      "cached_input": 24369,
+      "output": 4386,
+      "cost_usd": 0.003776,
+      "ms": 15829,
+      "analyst_fresh": 10,
+      "analyst_cache_hits": 0,
+      "courses_considered": 55,
+      "scores": {
+        "Carl Dickman Par 3 Golf Course": 85,
+        "Short Beach Golf Course": 82,
+        "Twin Lakes Golf Course": 80,
+        "Guilford Lakes Golf Course": 77,
+        "Tashua Glen Golf Course": 75,
+        "Gainfield Farms Gold Course": 71,
+        "Hawk's Landing Golf Club": 65,
+        "Sleeping Giant Golf Course": 90,
+        "Orchards Golf Course": 87,
+        "Homewood Acres Golf Course": 85
+      }
+    },
+    "warm": {
+      "input": 7295,
+      "cached_input": 7043,
+      "output": 432,
+      "cost_usd": 0.000312,
+      "ms": 4701,
+      "analyst_fresh": 0,
+      "analyst_cache_hits": 10,
+      "courses_considered": 55,
+      "scores": {
+        "Carl Dickman Par 3 Golf Course": 85,
+        "Short Beach Golf Course": 82,
+        "Twin Lakes Golf Course": 80,
+        "Guilford Lakes Golf Course": 77,
+        "Tashua Glen Golf Course": 75,
+        "Gainfield Farms Gold Course": 71,
+        "Hawk's Landing Golf Club": 65,
+        "Sleeping Giant Golf Course": 90,
+        "Orchards Golf Course": 87,
+        "Homewood Acres Golf Course": 85
+      }
+    },
+    "same_scores": true,
+    "cost_saving": 0.917
+  },
+  {
+    "query": "Long weekend on Cape Cod with my wife. She's a beginner and we want easy, flat courses. 3 rounds.",
+    "cold": {
+      "input": 39498,
+      "cached_input": 32374,
+      "output": 4010,
+      "cost_usd": 0.00317,
+      "ms": 11160,
+      "analyst_fresh": 10,
+      "analyst_cache_hits": 0,
+      "courses_considered": 63,
+      "scores": {
+        "Mink Meadows Golf Club": 90,
+        "Little Harbor Country Club": 85,
+        "Marion Golf Club": 85,
+        "Highland Links": 80,
+        "Edgartown Golf Club": 75,
+        "Twin Brooks Golf Course": 70,
+        "Paul Harney Golf Club": 65,
+        "Holly Ridge Golf Club": 100,
+        "Falcon Golf Course": 100,
+        "Harwich Port Golf Club": 80
+      }
+    },
+    "warm": {
+      "input": 6528,
+      "cached_input": 6276,
+      "output": 329,
+      "cost_usd": 0.000252,
+      "ms": 3775,
+      "analyst_fresh": 0,
+      "analyst_cache_hits": 10,
+      "courses_considered": 63,
+      "scores": {
+        "Mink Meadows Golf Club": 90,
+        "Marion Golf Club": 85,
+        "Harwich Port Golf Club": 80,
+        "Highland Links": 80,
+        "Edgartown Golf Club": 75,
+        "Twin Brooks Golf Course": 70,
+        "Paul Harney Golf Club": 65,
+        "Holly Ridge Golf Club": 100,
+        "Falcon Golf Course": 100,
+        "Little Harbor Country Club": 85
+      }
+    },
+    "same_scores": true,
+    "cost_saving": 0.921
+  }
+]
