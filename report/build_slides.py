@@ -75,7 +75,7 @@ SLIDES = [
     </div>
     <div class="bignums">
       <div><b>{len(R.courses):,}</b><span>New England courses</span></div>
-      <div><b>{R.holes_measured:,}</b><span>holes measured: climb, steepness vs. ADA ramp, water carries, bunkers, walking</span></div>
+      <div><b>{R.holes_measured:,}</b><span>holes measured: climb, steepness vs. ADA ramp, water carries, bunkers, walking, lot to 1st tee</span></div>
       <div><b>1 → 5</b><span>of 8 facts known per course (same 15 courses)</span></div>
     </div>
   </div>
@@ -143,7 +143,7 @@ SLIDES = [
     <div class="bignums">
       <div><b>1 → 5</b><span>of 8 accessibility facts per course</span></div>
       <div><b>{T['cold_ms']/1000:.0f} s</b><span>to a measured shortlist (vs. 30–45 min of reading and calls)</span></div>
-      <div><b>{R.amen.get('driving_range', 0)}</b><span>courses with mapped driving ranges, for trip planning</span></div>
+      <div><b>{R.adaptive_n} + {R.veterans_n}</b><span>courses with verified adaptive carts, and with PGA HOPE veterans programs</span></div>
       {impact_user}
     </div>
     <div>{shot('14_fox_check.jpg', 'Fox Hopyard honest no')}</div>
@@ -156,7 +156,7 @@ SLIDES = [
   <h2>What's next</h2>
   <div class="cols">
     <div><h3>Honest limits</h3><ul class="body tight">
-      <li>Cart rules and adaptive carts are rarely mapped, so the app writes the questions to ask</li>
+      <li>Cart rules, ADA parking and clubhouse access are rarely mapped, so the app writes the questions to ask</li>
       <li>Public vs. private unknown for most courses</li>
       <li>No live tee times; links to each course's booking page</li>
       <li>AI scores vary slightly; the cache keeps repeats consistent</li></ul></div>

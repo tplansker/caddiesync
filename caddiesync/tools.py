@@ -27,6 +27,13 @@ EVIDENCE_FIELDS = (
     "biggest_climb_hole", "steepest_grade_pct", "steepest_hole", "elevation_range_ft", "walkability",
     "avg_walk_between_holes_yd", "longest_walk_between_holes_yd", "forced_carries", "water_carry_holes",
     "longest_water_carry_yd", "water_in_play", "bunkers", "bunkers_near_green_avg", "cartpath_to_green_yd",
+    # measured from mapped parking lots and clubhouses (straight-line walks)
+    "walk_lot_to_first_tee_yd", "walk_9th_green_to_clubhouse_yd", "walk_back_to",
+    # ADA access: mapped tags (rare) or hand-researched with sources
+    "accessible_parking_mapped", "clubhouse_wheelchair_mapped", "restrooms_mapped",
+    "accessible_parking", "clubhouse_step_free", "accessible_restrooms",
+    # adaptive equipment and programs (hand-researched, data/adaptive.json)
+    "adaptive_equipment", "adaptive_note", "adaptive_programs",
     # policies: only known when researched or confirmed by phone
     "cart_fairway_access", "cart_near_greens", "adaptive_cart",
     # hand-researched text

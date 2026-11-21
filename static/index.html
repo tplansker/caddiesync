@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=8">
+  <link rel="stylesheet" href="/static/styles.css?v=10">
   <script>
     // Apply saved text size / contrast before paint so the page never flashes the wrong size.
     try {
@@ -180,6 +180,8 @@
               <button type="button" class="state-chip amen-chip" aria-pressed="false" data-amen="food_drink">Food &amp; drink</button>
               <button type="button" class="state-chip amen-chip" aria-pressed="false" data-amen="pro_shop">Pro shop</button>
               <button type="button" class="state-chip amen-chip" aria-pressed="false" data-amen="simulator">Simulator</button>
+              <button type="button" class="state-chip amen-chip" aria-pressed="false" data-amen="adaptive">Adaptive equipment</button>
+              <button type="button" class="state-chip amen-chip" aria-pressed="false" data-amen="veterans">Veterans program</button>
             </div>
             <ul class="legend" aria-label="Map legend">
               <li><i style="background:#2e9d5a"></i>Flat</li><li><i style="background:#9ccc3d"></i>Gently rolling</li>
@@ -197,8 +199,9 @@
       <div class="wrap about-grid">
         <h2 id="about-title" class="display display-sm">Honest about the data</h2>
         <div>
-          <p><strong>Measured, not guessed.</strong> Course maps come from OpenStreetMap, where volunteers have drawn most New England courses hole by hole. CaddieSync measures every hole against USGS elevation data: total climbing, the steepest stretch compared with the 8.33% ADA limit for a wheelchair ramp, shots over water, bunkers by each green, and the walk to the next tee.</p>
-          <p><strong>Honest about gaps.</strong> Course rules (cart access near greens, adaptive carts) aren't on any map, so CaddieSync tells you exactly what to ask when you call. Price tiers ($ to $$$$) are researched for featured courses and marked unknown elsewhere. CaddieSync links you to each course's own booking page instead of guessing tee times.</p>
+          <p><strong>Measured, not guessed.</strong> Course maps come from OpenStreetMap, where volunteers have drawn most New England courses hole by hole. CaddieSync measures every hole against USGS elevation data: total climbing, the steepest stretch compared with the 8.33% ADA limit for a wheelchair ramp, shots over water, bunkers by each green, the walk to the next tee, the walk from the parking lot to the 1st tee, and the walk from the 9th green back to the clubhouse (so you know whether you can stop after nine).</p>
+          <p><strong>Adaptive golf and veterans.</strong> A few courses have adaptive equipment like SoloRider single-rider carts or ParaGolfer standing chairs, and many host free PGA HOPE golf programs for veterans with disabilities. CaddieSync lists the ones it could verify from published sources and links to them. Look for the "Adaptive equipment" and "Veterans program" filters on the map.</p>
+          <p><strong>Honest about gaps.</strong> Accessible parking, a step-free clubhouse, accessible restrooms and course rules (cart access near greens, adaptive carts) are almost never on a map or a public list, so CaddieSync tells you exactly what to ask when you call. Price tiers ($ to $$$$) are researched for featured courses and marked unknown elsewhere. CaddieSync links you to each course's own booking page instead of guessing tee times.</p>
         </div>
       </div>
     </section>
@@ -293,6 +296,7 @@
           <label><input type="checkbox" name="cart_near_greens" value="true"><span>Needs the cart close to greens and tees</span></label>
           <label><input type="checkbox" name="adaptive_cart" value="true"><span>Uses a single-rider / adaptive cart (e.g. SoloRider)</span></label>
           <label><input type="checkbox" name="shorter_course" value="true"><span>Prefers a shorter course</span></label>
+          <label><input type="checkbox" name="veteran" value="true"><span>Veteran: show free veterans golf programs (PGA HOPE)</span></label>
         </div>
         <div class="pf-grid">
           <div><label for="pf-skill">Skill level</label>
@@ -334,6 +338,6 @@
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script src="/static/app.js?v=8"></script>
+  <script src="/static/app.js?v=10"></script>
 </body>
 </html>

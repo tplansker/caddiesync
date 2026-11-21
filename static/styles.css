@@ -516,3 +516,23 @@ html[data-contrast="high"] .amen-want { background: #ffe500; color: #000; }
 .rec-flag-poor { background: #fbe1df; color: #7a1a14; }
 html[data-contrast="high"] .rec-flag-poor { background: #000; color: #ff8a80; border: 1px solid #ff8a80; }
 .rec:has(.rec-flag-poor) { border-color: var(--line); }
+
+/* ADA access, adaptive equipment, veterans */
+.adaptive-box { border: 2px solid var(--lime); border-radius: 14px; padding: 12px 16px; margin: 4px 0 12px; background: rgba(198, 242, 78, 0.08); }
+.adaptive-box ul { margin: 4px 0 6px; padding-left: 20px; }
+.adaptive-box p { margin: 4px 0; font-size: 0.95rem; }
+.adaptive-title { font-weight: 800; font-family: var(--display, inherit); letter-spacing: 0.01em; margin: 0 0 2px; }
+.vets-line { margin: 2px 0 12px; font-size: 0.95rem; }
+.vets-badge { display: inline-block; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+  border-radius: 999px; padding: 3px 10px; margin-right: 6px; background: var(--ink); color: var(--paper); }
+.ada { margin: 0 0 12px; }
+.ada-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 6px; margin: 6px 0; }
+.ada-row { border: 1.5px dashed var(--line); border-radius: 10px; padding: 6px 10px; }
+.ada-row dt { font-size: 0.8rem; color: var(--muted); font-weight: 700; }
+.ada-row dd { margin: 0; font-weight: 700; }
+.ada-known { border-style: solid; border-color: var(--lime); }
+.ada-why summary { cursor: pointer; font-size: 0.9rem; color: var(--muted); }
+.ada-why p { font-size: 0.9rem; margin: 6px 0 0; }
+html[data-contrast="high"] .adaptive-box { background: #000; border-color: #ffe500; }
+html[data-contrast="high"] .ada-row { border-color: #fff; }
+.ada-none { font-size: 0.95rem; margin: 4px 0; border-left: 3px dashed var(--line); padding-left: 10px; }

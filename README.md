@@ -75,6 +75,7 @@ sent to the AI, and repeat questions come from the cache.
 | `data/courses.json` | Every mapped New England course with measured accessibility facts (built, committed) |
 | `data/places.json` | Towns and villages for location search |
 | `data/featured.json` | Hand-researched facts for featured courses: price tiers, booking links, phone, sources |
+| `data/adaptive.json` | Hand-researched adaptive equipment and veterans (PGA HOPE) programs, with sources |
 | `scripts/build_courses.py`, `build_measure.py` | Rebuild the course data (only needed to refresh it) |
 | `static/` | The web page |
 | `tests/attack_test.py` | Runs 6 prompt-injection attacks (one hidden in a saved profile) and checks every defense held |
@@ -94,6 +95,15 @@ sent to the AI, and repeat questions come from the cache.
   (`python scripts/build_courses.py amenities`). Ranges are well mapped (372 courses); food and pro shops much less
   so. A missing extra means "not on the map", so the app says "ask" and adds it to the call list instead of
   claiming the course has none. Extras give a small ranking boost only when accessibility is close.
+- **Getting in and getting back.** From mapped parking lots and clubhouses inside each course outline:
+  the straight-line walk from the nearest lot to the 1st tee, and from the 9th green back to the clubhouse (or
+  the lot). Lots farther than ~450 m from the 1st tee are ignored as likely maintenance or overflow lots.
+- **ADA access.** Accessible parking, a step-free clubhouse and accessible restrooms are shown only when a
+  mapper tagged them (`capacity:disabled`, `wheelchair=*`; very rare) or a source says so. Everything else is
+  "Unknown: ask" and goes on the call list. The app never assumes ADA compliance.
+- **Adaptive equipment and veterans programs.** `data/adaptive.json` lists hand-researched SoloRider carts,
+  ParaGolfer chairs, adaptive clinics and PGA HOPE veterans program sites, each with sources. Golfers who need an
+  adaptive cart see verified courses first; a profile's "Veteran" option shows PGA HOPE sites.
 - **Islands.** Courses on Martha's Vineyard, Nantucket, Block Island and Maine islands are flagged "ferry needed".
 - **Limits.** Map quality varies: courses drawn only as an outline get no measurements and are marked "not
   measured". Bunker depth and course rules (cart access near greens, adaptive carts) aren't on any map, so the
@@ -105,7 +115,7 @@ sent to the AI, and repeat questions come from the cache.
   domain), via OpenTopoData. The app never calls these services at runtime; the data is built once.
 
 To refresh the data (not needed to run the app): `pip install -r scripts/requirements-build.txt`, then
-`python scripts/build_courses.py fetch`, `... elevation`, `... amenities`, `... build`. Downloads are cached in `data/raw/`.
+`python scripts/build_courses.py fetch`, `... elevation`, `... amenities`, `... facilities`, `... build`. Downloads are cached in `data/raw/`.
 
 ## Free profiles
 

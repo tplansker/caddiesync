@@ -117,6 +117,11 @@ by_state = Counter(c["state"] for c in courses)
 amen = Counter(k for c in courses for k in (c.get("amenities") or {}))
 terr = Counter(c.get("terrain") for c in courses)
 access = Counter(c.get("access") for c in courses)
+lot_walk = sum(c.get("walk_lot_to_first_tee_yd") is not None for c in courses)
+back_walk = sum(c.get("walk_9th_green_to_clubhouse_yd") is not None for c in courses)
+adaptive_n = sum(bool(c.get("adaptive_equipment")) for c in courses)
+veterans_n = sum(bool(c.get("veterans_program")) for c in courses)
+ada_tagged = sum(any(c.get(k) for k in ("accessible_parking_mapped", "clubhouse_wheelchair_mapped")) for c in courses)
 ACCESS_FIELDS = ("terrain", "walkability", "cart_fairway_access", "cart_near_greens", "adaptive_cart", "forced_carries", "water_in_play", "bunkers")
 known_all = st.mean(sum(c.get(f) is not None for f in ACCESS_FIELDS) for c in courses) if courses else 0
 WEB_RESEARCH_KNOWN = 1.0   # measured earlier: 15 hand-researched CT courses, 0-3 of these 8 facts each (mean 1.0)
@@ -353,6 +358,11 @@ by hand, measured facts rose from <b>{WEB_RESEARCH_KNOWN:.0f} to {MEASURED_SAME_
 <li><b>It searches by body, not by tee time.</b> "My dad has a bad knee", "I use a SoloRider", "my wife is a beginner" become structured needs, and every course
 is scored for that group with reasons a golfer can check.</li>
 <li><b>It is honest about gaps.</b> Unknown facts lower a score instead of being guessed, and the app writes the exact questions to ask when you call.</li>
+<li><b>It covers getting there and getting back.</b> From mapped parking lots and clubhouses it measures the walk from the lot to the 1st tee
+({lot_walk} courses) and from the 9th green back to the clubhouse ({back_walk} courses), so a golfer knows whether stopping after nine is easy.
+It lists verified adaptive equipment (SoloRider carts, ParaGolfer chairs; {adaptive_n} courses) and free PGA HOPE veterans programs ({veterans_n} courses),
+all from published sources. Accessible parking and a step-free clubhouse are tagged on the map for only {ada_tagged} courses, so for the rest the app says
+"Unknown: ask" and adds the questions to the call list instead of assuming ADA compliance.</li>
 <li><b>It works for trips.</b> Any town, region ("Cape Cod", "the Berkshires") or state; up to five courses, mapped, with booking links and directions.</li>
 </ul>
 <p class="small">Honest limits of the novelty: course <i>rules</i> (carts near greens, adaptive carts) are still mostly unknown, and tee-time availability is not
@@ -543,7 +553,8 @@ def section_limits() -> str:
 <h2><span class="num">7</span>Limits and next steps</h2>
 <h3>What doesn't work yet</h3>
 <ul>
-<li><b>Course rules are mostly unknown.</b> Cart access near greens and adaptive carts aren't on any map, so most scores are capped and come with "call to confirm".</li>
+<li><b>Course rules are mostly unknown.</b> Cart access near greens and adaptive carts aren't on any map, so most scores are capped and come with "call to confirm".
+Adaptive equipment is verified for only {adaptive_n} courses, and ADA parking and clubhouse access for {ada_tagged}; the walks are straight-line distances from the middle of a mapped lot.</li>
 <li><b>Public vs. private is unknown for {unknown_share:.0%} of courses.</b> Known private clubs are excluded; the rest show "Access: check" and the call list asks first.</li>
 <li><b>No live tee times.</b> There is no public tee-time API for these courses, and scraping booking sites breaks their terms; CaddieSync links to each course's own booking page.
 Price tiers are researched for only 12 featured facilities.</li>

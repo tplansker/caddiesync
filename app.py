@@ -215,7 +215,9 @@ def api_courses() -> list[dict]:
                                           "terrain", "price_tier", "map_detail", "total_climb_ft",
                                           "water_carry_holes", "verified_by_phone", "website")}
                    | {"known": sum(c.get(f) is not None for f in ACCESS_FIELDS), "of": len(ACCESS_FIELDS),
-                      "amen": sorted((c.get("amenities") or {}).keys())})
+                      "amen": sorted((c.get("amenities") or {}).keys())
+                              + (["adaptive"] if c.get("adaptive_equipment") else [])
+                              + (["veterans"] if c.get("veterans_program") else [])})
     return out
 
 

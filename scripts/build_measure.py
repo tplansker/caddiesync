@@ -69,6 +69,7 @@ def measure(course: dict, elev: dict[str, float]) -> dict:
     out: dict = {"holes_mapped": len(holes), "greens_mapped": len(greens), "bunkers_mapped": len(bunkers),
                  "water_mapped": len(all_water), "cartpaths_mapped": len(paths)}
     if not holes:
+        out.update(facility_walks(course, []))
         return out
 
     from shapely.ops import unary_union
@@ -180,6 +181,7 @@ def measure(course: dict, elev: dict[str, float]) -> dict:
     cp = [h["cartpath_to_green_m"] for h in per_hole if "cartpath_to_green_m" in h]
     if len(cp) >= 9 and len(paths) >= 3:
         out["cartpath_to_green_yd"] = round(statistics.median(cp) * M_TO_YD)
+    out.update(facility_walks(course, per_hole))
     if "terrain" in out:
         hard = out["terrain"] in ("hilly", "severe") or out.get("avg_walk_between_holes_yd", 0) > 250
         easy = out["terrain"] in ("flat", "gently_rolling") and out.get("avg_walk_between_holes_yd", 999) < 130
@@ -259,10 +261,98 @@ def attach_amenities(courses: list[dict], code: str) -> None:
             a["clubhouse"] = True
 
 
+def attach_facilities(courses: list[dict], code: str) -> None:
+    """Parking lots, clubhouses and restrooms on or within ~150 m of each course (points: the middle of each lot or
+    building), plus any accessibility tags mappers added. Missing = not on the map, never 'doesn't exist'."""
+    from shapely.geometry import Point
+    from shapely.strtree import STRtree
+    for c in courses:
+        c["fac"] = {"lots": [], "clubhouses": [], "disabled_spaces": 0, "disabled_tagged": False, "wheelchair": None, "toilets": 0}
+        w = c["tags"].get("wheelchair")
+        if w in ("yes", "limited", "no"):
+            c["fac"]["wheelchair"] = w
+    f = RAW / f"osm_{code}_facilities.json"
+    areas = [c for c in courses if c["shape"].geom_type in ("Polygon", "MultiPolygon")]
+    if not f.exists() or not areas:
+        return
+    tree = STRtree([c["shape"].buffer(0.0018) for c in areas])
+    for e in json.loads(f.read_text())["elements"]:
+        t = e.get("tags", {})
+        lat, lon = (e.get("lat"), e.get("lon")) if "lat" in e else (e.get("center", {}).get("lat"), e.get("center", {}).get("lon"))
+        if lat is None:
+            continue
+        pt = Point(lon, lat)
+        hits = tree.query(pt, predicate="intersects")
+        if not len(hits):
+            continue
+        fac = min((areas[i] for i in hits), key=lambda c: c["shape"].distance(pt))["fac"]
+        if t.get("amenity") == "parking":
+            if t.get("access") in ("private", "no") and t.get("parking") != "surface":
+                continue
+            fac["lots"].append(pt)
+            cap = t.get("capacity:disabled", "")
+            if cap.isdigit():
+                fac["disabled_spaces"] += int(cap); fac["disabled_tagged"] = True
+            elif cap == "yes":
+                fac["disabled_tagged"] = True
+        elif t.get("parking_space") == "disabled":
+            fac["disabled_spaces"] += 1; fac["disabled_tagged"] = True
+        elif t.get("amenity") == "toilets":
+            fac["toilets"] += 1
+        elif t.get("building") == "clubhouse" or t.get("club") == "golf":
+            fac["clubhouses"].append(pt)
+            if t.get("wheelchair") in ("yes", "limited", "no"):
+                fac["wheelchair"] = t["wheelchair"]
+
+
+def facility_walks(course: dict, holes: list[dict]) -> dict:
+    """Walk from the nearest mapped parking lot to the 1st tee, and from the 9th green back to the clubhouse
+    (or the lot when no clubhouse is mapped). Straight-line distances, so real walks are a bit longer."""
+    fac = course.get("fac") or {}
+    out: dict = {}
+    if fac.get("disabled_tagged"):
+        out["accessible_parking_mapped"] = fac["disabled_spaces"] or True
+    if fac.get("wheelchair"):
+        out["clubhouse_wheelchair_mapped"] = fac["wheelchair"]
+    if fac.get("toilets"):
+        out["restrooms_mapped"] = fac["toilets"]
+    lots, clubs = fac.get("lots", []), fac.get("clubhouses", [])
+    if not holes or not (lots or clubs):
+        return out
+    proj = project(course["shape"].centroid.y, course["shape"].centroid.x)
+    lots_m = [to_m(p, proj) for p in lots]
+    clubs_m = [to_m(p, proj) for p in clubs]
+    firsts = [h["_tee"] for h in holes if h["ref"] == 1]
+    ninths = [h["_green"] for h in holes if h["ref"] == 9]
+    if firsts and lots_m:
+        d = min(t.distance(l) for t in firsts for l in lots_m)
+        if d < 450:  # farther usually means a maintenance or overflow lot, not where golfers park
+            out["walk_lot_to_first_tee_yd"] = round(d * M_TO_YD)
+    if ninths:
+        target, pts = ("clubhouse", clubs_m) if clubs_m else ("parking lot", lots_m)
+        d = min(g.distance(p) for g in ninths for p in pts)
+        if d < 700:
+            out["walk_9th_green_to_clubhouse_yd"] = round(d * M_TO_YD)
+            out["walk_back_to"] = target
+    return out
+
+
 def build() -> None:
     elev = json.loads((RAW / "elevation.json").read_text()) if (RAW / "elevation.json").exists() else {}
     places = json.loads((RAW / "places.json").read_text()) if (RAW / "places.json").exists() else []
     featured = {f["osm_name"].lower(): f for f in json.loads((ROOT / "data" / "featured.json").read_text())}
+    # Hand-researched adaptive equipment and veterans programs (data/adaptive.json, every row with sources)
+    adaptive: dict[tuple[str, str], dict] = {}
+    for row in json.loads((ROOT / "data" / "adaptive.json").read_text()):
+        k = (row["osm_name"].lower(), row["state"])
+        cur = adaptive.setdefault(k, {"sources": []})
+        for key, v in row.items():
+            if key in ("osm_name", "state"):
+                continue
+            if key == "sources":
+                cur["sources"] += [x for x in v if x not in cur["sources"]]
+            else:
+                cur[key] = v
     records, seen = [], {}
     for code in STATES:
         if not (RAW / f"osm_{code}.json").exists():
@@ -271,6 +361,7 @@ def build() -> None:
         courses, feats = load_state(code)
         assign_features(courses, feats)
         attach_amenities(courses, code)
+        attach_facilities(courses, code)
         for c in courses:
             tags = c["tags"]
             pt = c["shape"].representative_point()
@@ -285,6 +376,9 @@ def build() -> None:
                 "map_detail": "full" if m["holes_mapped"] >= 9 else "partial" if m["holes_mapped"] else "outline",
                 "terrain": None, "terrain_note": None, "walkability": None,
                 "cart_fairway_access": None, "cart_near_greens": None, "adaptive_cart": None,
+                "adaptive_equipment": None, "adaptive_note": None, "adaptive_programs": None,
+                "veterans_program": None, "veterans_note": None,
+                "accessible_parking": None, "clubhouse_step_free": None, "accessible_restrooms": None,
                 "forced_carries": None, "water_in_play": None, "bunkers": None,
                 **m,
                 "website": tags.get("website") or tags.get("contact:website") or tags.get("url"),
@@ -307,6 +401,13 @@ def build() -> None:
                         rec["notes"] = f"{v} {rec['notes']}"
                     else:
                         rec[k] = v
+            ad = adaptive.get((name.lower(), code))
+            if ad:
+                for k, v in ad.items():
+                    if k == "sources":
+                        rec["sources"] = rec["sources"] + [x for x in v if x not in rec["sources"]]
+                    else:
+                        rec[k] = v
             key = (slug(name), code)
             if key in seen:  # duplicate outlines: keep the one with more mapped detail
                 prev = seen[key]
@@ -327,5 +428,9 @@ def build() -> None:
         by_state[r["state"]]["full"] += r["map_detail"] == "full"
         by_state[r["state"]]["terrain"] += r["terrain"] is not None
         by_state[r["state"]][r["access"]] += 1
+        by_state[r["state"]]["lot_walk"] += "walk_lot_to_first_tee_yd" in r
+        by_state[r["state"]]["back_walk"] += "walk_9th_green_to_clubhouse_yd" in r
+        by_state[r["state"]]["adaptive"] += bool(r.get("adaptive_equipment"))
+        by_state[r["state"]]["veterans"] += bool(r.get("veterans_program"))
     print(json.dumps(by_state, indent=1))
     print(f"{len(records)} courses, {len(keep)} places")

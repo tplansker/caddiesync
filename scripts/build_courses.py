@@ -3,6 +3,7 @@
     python scripts/build_courses.py fetch       # 1. OpenStreetMap: courses, holes, greens, bunkers, water, cart paths, towns
     python scripts/build_courses.py elevation   # 2. USGS 3DEP elevation (via OpenTopoData) for points along every hole
     python scripts/build_courses.py amenities   # 2b. OpenStreetMap: driving ranges, golf shops, simulators, food & drink
+    python scripts/build_courses.py facilities  # 2c. OpenStreetMap: parking lots, clubhouses, restrooms (+ accessibility tags)
     python scripts/build_courses.py build       # 3. measure each course and write data/courses.json + data/places.json
 
 Raw downloads are cached in data/raw/ (not committed), so each stage can be re-run without downloading again.
@@ -225,6 +226,74 @@ out center tags;"""
         time.sleep(12)
 
 
+# ---------------------------------------------------------------------------------------------- 2c. facilities
+
+def facilities() -> None:
+    """Parking lots, clubhouse buildings and restrooms inside each course outline, with any accessibility tags
+    (wheelchair=*, capacity:disabled, parking_space=disabled). Used to measure the walk from the lot to the first tee
+    and from the 9th green back to the clubhouse."""
+    for code, name in STATES.items():
+        out = RAW / f"osm_{code}_facilities.json"
+        if out.exists():
+            print(f"{code}: facilities cached"); continue
+        print(f"{code}: downloading parking lots and clubhouses for {name}...", flush=True)
+        q = f"""[out:json][timeout:300];
+area["name"="{name}"]["admin_level"="4"]["boundary"="administrative"]->.s;
+way["leisure"="golf_course"](area.s)->.c;
+.c map_to_area->.ca;
+(
+  nwr["amenity"="parking"](area.ca);
+  nwr["amenity"="parking_space"]["parking_space"="disabled"](area.ca);
+  nwr["building"="clubhouse"](area.ca);
+  nwr["club"="golf"](area.ca);
+  nwr["amenity"="toilets"](area.ca);
+);
+out center tags;"""
+        try:
+            data = overpass(q, attempts=4)
+        except RuntimeError:
+            print(f"{code}: whole-state query kept failing; trying smaller map tiles", flush=True)
+            data = facilities_tiled(code)
+        out.write_text(json.dumps(data))
+        print(f"{code}: {len(data['elements'])} facility elements", flush=True)
+        time.sleep(15)
+
+
+def facilities_tiled(code: str, n: int = 3) -> dict:
+    """Same query in an n x n grid of boxes over the state's courses (for big states that time out)."""
+    pts = [(e["bounds"]["minlat"], e["bounds"]["minlon"], e["bounds"]["maxlat"], e["bounds"]["maxlon"])
+           for e in json.loads((RAW / f"osm_{code}_courses.json").read_text())["elements"] if "bounds" in e]
+    s, w = min(p[0] for p in pts) - 0.01, min(p[1] for p in pts) - 0.01
+    nn, ee = max(p[2] for p in pts) + 0.01, max(p[3] for p in pts) + 0.01
+    elements, seen = [], set()
+    for i in range(n):
+        for j in range(n):
+            box = (f"{s + (nn - s) * i / n:.4f},{w + (ee - w) * j / n:.4f},"
+                   f"{s + (nn - s) * (i + 1) / n:.4f},{w + (ee - w) * (j + 1) / n:.4f}")
+            q = f"""[out:json][timeout:180];
+way["leisure"="golf_course"]({box})->.c;
+.c map_to_area->.ca;
+(
+  nwr["amenity"="parking"](area.ca);
+  nwr["amenity"="parking_space"]["parking_space"="disabled"](area.ca);
+  nwr["building"="clubhouse"](area.ca);
+  nwr["club"="golf"](area.ca);
+  nwr["amenity"="toilets"](area.ca);
+);
+out center tags;"""
+            try:
+                part = overpass(q, attempts=4)["elements"]
+            except RuntimeError:
+                print(f"{code}: tile {i},{j} kept failing; skipped", flush=True)
+                part = []
+            for e in part:
+                if (e["type"], e["id"]) not in seen:
+                    seen.add((e["type"], e["id"])); elements.append(e)
+            print(f"{code}: tile {i * n + j + 1}/{n * n}: {len(part)} elements", flush=True)
+            time.sleep(8)
+    return {"elements": elements}
+
+
 # ---------------------------------------------------------------------------------------------- 2. elevation
 
 ELEV_CACHE = RAW / "elevation.json"
@@ -282,6 +351,8 @@ if __name__ == "__main__":
         elevation()
     elif stage == "amenities":
         amenities()
+    elif stage == "facilities":
+        facilities()
     elif stage == "build":
         from build_measure import build  # noqa: E402  (kept in its own file for readability)
         build()

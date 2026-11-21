@@ -107,10 +107,17 @@ ORDER = {"terrain": ["flat", "gently_rolling", "hilly", "severe"], "forced_carri
          "bunkers": ["few", "moderate", "many"]}
 
 
+def has_extra(c: dict[str, Any], want: str) -> bool:
+    """A wanted extra the data knows about: mapped amenities, or a researched veterans program."""
+    if want == "veterans_program":
+        return bool(c.get("veterans_program"))
+    return bool((c.get("amenities") or {}).get(want))
+
+
 def pre_score(c: dict[str, Any], needs: Any, wants: list[str] | None = None) -> float:
     """Rule-based estimate (0-100) used only to choose which courses the AI analyzes. Not shown as the final score.
     Wanted extras (range, food...) add a small boost; accessibility always dominates."""
-    s = 100.0 + 4 * sum(1 for w in (wants or []) if (c.get("amenities") or {}).get(w))
+    s = 100.0 + 4 * sum(1 for w in (wants or []) if has_extra(c, w))
     t = c.get("terrain")
     if needs.terrain != "any":
         s -= 12 if t is None else {"flat_only": [0, 15, 40, 60], "avoid_steep": [0, 5, 25, 45]}[needs.terrain][ORDER["terrain"].index(t)]
@@ -126,6 +133,12 @@ def pre_score(c: dict[str, Any], needs: Any, wants: list[str] | None = None) -> 
         s += 5
     if needs.adaptive_cart and c.get("adaptive_cart") is False:
         s -= 50
+    if needs.adaptive_cart and c.get("adaptive_cart") is True:
+        s += 30  # verified adaptive equipment: rare, and it decides whether the golfer can play at all
+    if needs.walking_ability != "full" or needs.adaptive_cart:
+        lot = c.get("walk_lot_to_first_tee_yd")
+        if lot is not None:
+            s -= 0 if lot <= 250 else 3 if lot <= 400 else 6
     if c.get("map_detail") != "full":
         s -= 15  # little measured data: still possible, but less certain
     if c.get("access") == "unknown":

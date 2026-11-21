@@ -19,7 +19,8 @@ const NEED_LABELS = {
 const VERDICT = { great_fit: "Great fit", workable: "Workable", poor_fit: "Poor fit" };
 const TERRAIN = { flat: "Flat", gently_rolling: "Gently rolling", hilly: "Hilly", severe: "Very hilly" };
 const TERRAIN_COLOR = { flat: "#2e9d5a", gently_rolling: "#9ccc3d", hilly: "#f0a020", severe: "#d6453d" };
-const AMEN = { driving_range: "Driving range", practice_green: "Practice green", simulator: "Simulator", pro_shop: "Pro shop", food_drink: "Food & drink", clubhouse: "Clubhouse" };
+const AMEN = { driving_range: "Driving range", practice_green: "Practice green", simulator: "Simulator", pro_shop: "Pro shop", food_drink: "Food & drink", clubhouse: "Clubhouse",
+  adaptive: "Adaptive equipment", veterans: "Veterans program", veterans_program: "Veterans program" };
 const ACCESS = { public: "Public", municipal: "Public (town)", semi_private: "Semi-private", private: "Private", unknown: "Access: check" };
 const TILES = { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' };
 let lastResult = null;
@@ -106,15 +107,41 @@ function needChips(needs) {
   return Object.entries(needs).map(([k, v]) => NEED_LABELS[k]?.[String(v)]).filter(Boolean).map((t) => `<li class="chip chip-need">${esc(t)}</li>`).join("");
 }
 
+function accessBlock(r) {
+  const a = r.access_info; if (!a) return "";
+  const row = (label, k) => {
+    const v = a[k];
+    const txt = !v ? "Unknown: ask" : v.value === true ? "Yes" : typeof v.value === "number" ? `${v.value} mapped` : String(v.value);
+    const how = !v ? "" : v.how === "map" ? " (map)" : " (researched)";
+    return `<div class="ada-row ${v ? "ada-known" : ""}"><dt>${label}</dt><dd>${esc(txt + how)}</dd></div>`;
+  };
+  const adaptive = a.adaptive_equipment.length ? `<div class="adaptive-box">
+      <p class="adaptive-title"><span aria-hidden="true">♿</span> Adaptive equipment (verified)</p>
+      <ul>${a.adaptive_equipment.map((e) => `<li>${esc(e)}</li>`).join("")}</ul>
+      ${a.adaptive_note ? `<p>${esc(a.adaptive_note)}</p>` : ""}
+      ${a.adaptive_programs.length ? `<p><b>Programs:</b> ${a.adaptive_programs.map(esc).join(" · ")}</p>` : ""}</div>` : "";
+  const vets = a.veterans_program ? `<p class="vets-line"><span class="vets-badge">Veterans</span> ${esc(a.veterans_program)}${a.veterans_note ? `. ${esc(a.veterans_note)}` : ""}</p>` : "";
+  return `${adaptive}${vets}<div class="ada">
+      <p class="measured-title">Getting in and around</p>
+      ${a.parking || a.clubhouse || a.restrooms
+        ? `<dl class="ada-grid">${row("Accessible parking", "parking")}${row("Step-free clubhouse", "clubhouse")}${row("Accessible restrooms", "restrooms")}</dl>`
+        : `<p class="ada-none">Accessible parking, a step-free clubhouse and accessible restrooms aren't published for this course. They're on your call list.</p>`}
+      <details class="ada-why"><summary>Why so many "ask"?</summary><p>Public golf courses are expected to follow the ADA's 2010 design standards
+      (accessible parking, an accessible route to the clubhouse, and space for golf carts on the course), but no map or
+      public list shows which courses actually do. CaddieSync only says "yes" when a volunteer mapper or a published source does,
+      and adds the rest to your call list.</p></details></div>`;
+}
+
 function recCard(r, i) {
   const fx = { helps: "✓", hurts: "!", neutral: "•" };
   const findings = r.findings.map((f) => `<li><span class="fx ${f.effect}" aria-label="${f.effect}">${fx[f.effect]}</span><span>${esc(f.finding)}</span></li>`).join("");
   const amenEntries = Object.entries(r.amenities || {});
-  const missingWants = (r.wants || []).filter((w) => !(r.amenities || {})[w]);
+  const missingWants = (r.wants || []).filter((w) => w !== "veterans_program" && !(r.amenities || {})[w]);
   const amenLabel = (k, v) => k === "driving_range" && typeof v === "string" ? `Driving range (${v})` : k === "food_drink" && typeof v === "string" ? v : AMEN[k];
   const extras = amenEntries.length || missingWants.length ? `<div class="amenities" aria-label="On-site extras">
       ${amenEntries.map(([k, v]) => `<span class="amen ${(r.wants || []).includes(k) ? "amen-want" : ""}">✓ ${esc(amenLabel(k, v))}</span>`).join("")}
       ${missingWants.map((w) => `<span class="amen amen-ask">${esc(AMEN[w])}: not on the map, ask</span>`).join("")}</div>` : "";
+  const access = accessBlock(r);
   const measured = r.highlights.length ? `<div class="measured"><p class="measured-title">Measured from the map</p><ul>${r.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul></div>` : "";
   const script = r.call_script.length ? `<details class="call-script"><summary>What to ask when you call</summary><ol>${r.call_script.map((q) => `<li>${esc(q)}</li>`).join("")}</ol></details>` : "";
   const book = safeUrl(r.booking_url), site = safeUrl(r.website);
@@ -132,6 +159,7 @@ function recCard(r, i) {
       <p class="why">${esc(r.why_it_fits)}</p>
       ${r.heads_up ? `<p class="heads"><b>Heads up:</b> ${esc(r.heads_up)}</p>` : ""}
       ${extras}
+      ${access}
       ${measured}
       <ul class="findings">${findings}</ul>
       ${r.verify_with_course.length ? `<p class="verify"><b>Call to confirm:</b> ${r.verify_with_course.map(esc).join(" · ")}</p>` : ""}
@@ -240,6 +268,9 @@ async function copyPlan() {
     lines.push(`${i + 1}. ${r.course_name} (${r.town || ""}, ${r.state}) · ${r.distance_mi} mi · match ${r.accessibility_match_score}/100${r.price_tier ? ` · ${r.price_tier}` : ""}`);
     lines.push(`   ${r.why_it_fits}`);
     if (r.heads_up) lines.push(`   Heads up: ${r.heads_up}`);
+    const ai = r.access_info || {};
+    if ((ai.adaptive_equipment || []).length) lines.push(`   Adaptive equipment: ${ai.adaptive_equipment.join("; ")}`);
+    if (ai.veterans_program) lines.push(`   Veterans: ${ai.veterans_program}`);
     if (r.phone) lines.push(`   Phone: ${r.phone}`);
     const link = safeUrl(r.booking_url) || safeUrl(r.website); if (link) lines.push(`   ${link}`);
     lines.push(`   Directions: ${r.directions_url}`);
@@ -340,6 +371,7 @@ function needSummary(p) {
   if (p.cart_near_greens) out.push("Cart near greens");
   if (p.adaptive_cart) out.push("Adaptive cart");
   if (p.shorter_course) out.push("Shorter course");
+  if (p.veteran) out.push("Veteran");
   return out;
 }
 
@@ -368,7 +400,7 @@ function renderAccount() {
 
 const BLANK = { display_name: "", home_town: "", usual_players: 1, travel_miles: 25, price_tier_max: null, holes: "either",
   walking_ability: "full", terrain: "any", forced_carries: "any", bunkers: "any", cart_near_greens: false, adaptive_cart: false,
-  shorter_course: false, skill: "unknown", notes: "" };
+  shorter_course: false, skill: "unknown", veteran: false, notes: "" };
 
 function fillForm(p) {
   const f = pform.elements, d = { ...BLANK, ...(p || {}) };
@@ -379,7 +411,7 @@ function fillForm(p) {
     $$(`input[name="${name}"]`, pform).forEach((r) => { r.checked = r.value === String(d[name]); });
   }
   f.bunkers.checked = d.bunkers === "avoid_deep";
-  for (const name of ["cart_near_greens", "adaptive_cart", "shorter_course"]) f[name].checked = !!d[name];
+  for (const name of ["cart_near_greens", "adaptive_cart", "shorter_course", "veteran"]) f[name].checked = !!d[name];
 }
 
 function readForm() {
@@ -390,7 +422,7 @@ function readForm() {
     price_tier_max: f.price_tier_max.value || null, holes: radio("holes") || "either",
     walking_ability: radio("walking_ability") || "full", terrain: radio("terrain") || "any", forced_carries: radio("forced_carries") || "any",
     bunkers: f.bunkers.checked ? "avoid_deep" : "any", cart_near_greens: f.cart_near_greens.checked, adaptive_cart: f.adaptive_cart.checked,
-    shorter_course: f.shorter_course.checked, skill: f.skill.value, notes: f.notes.value.trim(),
+    shorter_course: f.shorter_course.checked, skill: f.skill.value, veteran: f.veteran.checked, notes: f.notes.value.trim(),
   };
 }
 

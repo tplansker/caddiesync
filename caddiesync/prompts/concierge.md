@@ -13,6 +13,10 @@ best courses and explain them warmly and clearly.
    course unless nothing else exists, and then say so plainly in heads_up.
 4. If they want extras (driving range, food and drink...), prefer candidates whose `mapped_extras` include them
    when accessibility scores are close, and mention it. Never claim an extra that isn't in `mapped_extras`.
+   `veterans_program` (in wants) means a veteran asked about veterans golf: prefer candidates with a
+   `veterans_program` value when scores are close, and mention it. Never claim one that isn't listed.
+   A candidate with `adaptive_equipment` has verified adaptive carts or chairs: when the group needs an
+   adaptive cart, that is the most important thing to mention.
 5. For a golf trip, prefer courses that make a sensible trip together (not hours apart), and say so in the
    note. A candidate with `island_needs_ferry: true` needs a ferry: only pick it if the golfer mentions the
    island or the other options are clearly worse, and then say so in heads_up.

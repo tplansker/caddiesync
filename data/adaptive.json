@@ -1,0 +1,302 @@
+[
+ {
+  "osm_name": "Leo Jerome Martin Memorial Golf Course",
+  "state": "MA",
+  "adaptive_cart": true,
+  "adaptive_equipment": [
+   "SoloRider single-rider cart (1)",
+   "ParaGolfer standing wheelchair (2)"
+  ],
+  "adaptive_note": "State (DCR) course. Adaptive carts are rented first come, first served; the course can schedule training on them. The Massachusetts ParaGolfer Association runs adaptive clinics at DCR courses.",
+  "adaptive_programs": [
+   "Massachusetts ParaGolfer Association clinics"
+  ],
+  "sources": [
+   "https://www.mass.gov/info-details/adaptive-golf-carts",
+   "https://www.mass.gov/info-details/adaptive-golf-programs"
+  ]
+ },
+ {
+  "osm_name": "Ponkapoag Golf Course",
+  "state": "MA",
+  "adaptive_cart": true,
+  "adaptive_equipment": [
+   "SoloRider single-rider cart (1)",
+   "ParaGolfer standing wheelchair (2)"
+  ],
+  "adaptive_note": "State (DCR) course. Adaptive carts are rented first come, first served; the course can schedule training on them. The Massachusetts ParaGolfer Association runs adaptive clinics at DCR courses.",
+  "adaptive_programs": [
+   "Massachusetts ParaGolfer Association clinics"
+  ],
+  "sources": [
+   "https://www.mass.gov/info-details/adaptive-golf-carts",
+   "https://www.mass.gov/info-details/adaptive-golf-programs"
+  ]
+ },
+ {
+  "osm_name": "Franconia Golf Course",
+  "state": "MA",
+  "adaptive_cart": true,
+  "adaptive_equipment": [
+   "SoloRider single-rider cart (the city bought 2 for its two courses)"
+  ],
+  "adaptive_note": "City of Springfield course. The SoloRider carts are for golfers with ADA documentation; call ahead to reserve one.",
+  "sources": [
+   "https://www.nepm.org/regional-news/2024-08-29/new-adaptive-golf-carts-set-to-hit-the-green-in-springfield",
+   "https://www.aol.com/solorider-golf-carts-springfield-golf-233232601.html"
+  ]
+ },
+ {
+  "osm_name": "Veterans Memorial Golf Course",
+  "state": "MA",
+  "adaptive_cart": true,
+  "adaptive_equipment": [
+   "SoloRider single-rider cart (the city bought 2 for its two courses)"
+  ],
+  "adaptive_note": "City of Springfield course. The SoloRider carts are for golfers with ADA documentation; call ahead to reserve one.",
+  "sources": [
+   "https://www.nepm.org/regional-news/2024-08-29/new-adaptive-golf-carts-set-to-hit-the-green-in-springfield",
+   "https://www.aol.com/solorider-golf-carts-springfield-golf-233232601.html"
+  ]
+ },
+ {
+  "osm_name": "Goodwin Park Golf Course",
+  "state": "CT",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (Connecticut PGA), spring and fall 2026",
+  "sources": [
+   "https://ctpga.com/pga-hope-connecticut-programs"
+  ]
+ },
+ {
+  "osm_name": "Springfield Country Club",
+  "state": "MA",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (Connecticut PGA), spring and fall 2026",
+  "sources": [
+   "https://ctpga.com/pga-hope-connecticut-programs"
+  ]
+ },
+ {
+  "osm_name": "Race Brook Country Club",
+  "state": "CT",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (Connecticut PGA), summer 2026",
+  "sources": [
+   "https://ctpga.com/pga-hope-connecticut-programs"
+  ]
+ },
+ {
+  "osm_name": "Crestview Country Club",
+  "state": "MA",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (Connecticut PGA), summer 2026",
+  "sources": [
+   "https://ctpga.com/pga-hope-connecticut-programs"
+  ]
+ },
+ {
+  "osm_name": "Crestview Country Club",
+  "state": "CT",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (Connecticut PGA), summer 2026",
+  "sources": [
+   "https://ctpga.com/pga-hope-connecticut-programs"
+  ]
+ },
+ {
+  "osm_name": "Lyman Orchards Golf Club",
+  "state": "CT",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (Connecticut PGA), summer 2026 (The Golf Center at Lyman Orchards)",
+  "sources": [
+   "https://ctpga.com/pga-hope-connecticut-programs"
+  ]
+ },
+ {
+  "osm_name": "H Smith Richardson Golf Course",
+  "state": "CT",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (Connecticut PGA), fall 2026",
+  "sources": [
+   "https://ctpga.com/pga-hope-connecticut-programs"
+  ]
+ },
+ {
+  "osm_name": "Westwoods Golf Course",
+  "state": "CT",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (Connecticut PGA), fall 2026",
+  "sources": [
+   "https://ctpga.com/pga-hope-connecticut-programs"
+  ]
+ },
+ {
+  "osm_name": "Atkinson Resort & Country Club",
+  "state": "NH",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Bangor Municipal Golf Course",
+  "state": "ME",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Patriot Golf Course",
+  "state": "MA",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Winchester Country Club",
+  "state": "MA",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "The Haven Country Club",
+  "state": "MA",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Burlington Country Club",
+  "state": "VT",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Fresh Pond Golf Course",
+  "state": "MA",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Candia Woods",
+  "state": "NH",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Montcalm Golf Club",
+  "state": "NH",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Falmouth Country Club",
+  "state": "ME",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Haverhill Golf & Country Club",
+  "state": "MA",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Hyannis Golf Course",
+  "state": "MA",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Kirkbrae Country Club",
+  "state": "RI",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Allendale Country Club",
+  "state": "MA",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Riverside Golf Course",
+  "state": "ME",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Wannamoisett Country Club",
+  "state": "RI",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "The Oaks",
+  "state": "NH",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Windham Country Club",
+  "state": "NH",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Green Hill Golf Course",
+  "state": "MA",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), 2026 season",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Black Rock Country Club",
+  "state": "MA",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), planned for 2027",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Mount Pleasant Golf Club",
+  "state": "MA",
+  "veterans_program": "PGA HOPE free golf program for veterans with disabilities (New England PGA), planned for 2027",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ },
+ {
+  "osm_name": "Patriot Golf Course",
+  "state": "MA",
+  "veterans_note": "Informal veteran clinics on Friday afternoons (per New England PGA)",
+  "sources": [
+   "https://nepga.com/foundation/pgahope/"
+  ]
+ }
+]

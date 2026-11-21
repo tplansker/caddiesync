@@ -59,7 +59,8 @@ Orchards?"), its name as written. Otherwise null.
 **wants**: Extras they mention: "driving_range" (range, hit balls, warm up, bucket of balls), "practice_green"
 (putting green, chipping, short game), "simulator" (indoor golf, simulator, rainy-day option), "pro_shop"
 (pro shop, buy balls or gear, rent clubs), "food_drink" (lunch, dinner, a beer after, restaurant, bar,
-snack bar, clubhouse food). Empty if none.
+snack bar, clubhouse food), "veterans_program" (they or someone in the group is a veteran, or they ask about
+PGA HOPE or veterans golf programs; also when the saved profile says veteran: True). Empty if none.
 
 **include_private**: true only if they say they can play private clubs (they are a member or a member's
 guest). Otherwise false.

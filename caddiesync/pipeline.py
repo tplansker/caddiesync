@@ -121,32 +121,69 @@ def highlights(c: dict[str, Any]) -> list[str]:
         n = c["water_carry_holes"]
         out.append("No shots over water" if n == 0 else f"{n} hole{'s' if n != 1 else ''} with a shot over water (longest about {c['longest_water_carry_yd']} yd)")
     if c.get("bunkers_near_green_avg") is not None:
-        out.append(f"About {c['bunkers_near_green_avg']} bunkers per green")
+        out.append(f"About {c['bunkers_near_green_avg']:g} bunker{'' if c['bunkers_near_green_avg'] == 1 else 's'} per green")
     if c.get("avg_walk_between_holes_yd") is not None:
         out.append(f"About {c['avg_walk_between_holes_yd']} yd from each green to the next tee")
     if c.get("cartpath_to_green_yd") is not None:
         out.append(f"Mapped cart paths come within about {c['cartpath_to_green_yd']} yd of a typical green")
+    if c.get("walk_lot_to_first_tee_yd") is not None:
+        out.append(f"About {c['walk_lot_to_first_tee_yd']} yd from the parking lot to the 1st tee")
+    if c.get("walk_9th_green_to_clubhouse_yd") is not None:
+        y = c["walk_9th_green_to_clubhouse_yd"]
+        out.append(f"About {y} yd from the 9th green back to the {c.get('walk_back_to') or 'clubhouse'}"
+                   + (": easy to stop after 9" if y <= 150 else ""))
     return out
+
+
+def access_info(c: dict[str, Any]) -> dict[str, Any]:
+    """ADA access, adaptive equipment and veterans programs for the card: researched facts with sources, mapped
+    tags, or None (unknown: ask). Copied from the database by code, never written by the AI."""
+    def known(researched: Any, mapped: Any) -> dict[str, Any] | None:
+        if researched not in (None, ""):
+            return {"value": researched, "how": "researched"}
+        if mapped not in (None, ""):
+            return {"value": mapped, "how": "map"}
+        return None
+    return {
+        "parking": known(c.get("accessible_parking"), c.get("accessible_parking_mapped")),
+        "clubhouse": known(c.get("clubhouse_step_free"), c.get("clubhouse_wheelchair_mapped")),
+        "restrooms": known(c.get("accessible_restrooms"), c.get("restrooms_mapped")),
+        "adaptive_equipment": c.get("adaptive_equipment") or [], "adaptive_note": c.get("adaptive_note"),
+        "adaptive_programs": c.get("adaptive_programs") or [],
+        "veterans_program": c.get("veterans_program"), "veterans_note": c.get("veterans_note"),
+        "walk_lot_to_first_tee_yd": c.get("walk_lot_to_first_tee_yd"),
+        "walk_9th_green_to_clubhouse_yd": c.get("walk_9th_green_to_clubhouse_yd"), "walk_back_to": c.get("walk_back_to"),
+    }
 
 
 EXTRA_Q = {"driving_range": "Do you have a driving range, and is it covered?", "practice_green": "Is there a practice putting green?",
            "simulator": "Do you have an indoor simulator for rainy days?", "pro_shop": "Do you have a pro shop, and can we rent clubs?",
-           "food_drink": "Is there a restaurant, bar or snack bar open when we play?"}
+           "food_drink": "Is there a restaurant, bar or snack bar open when we play?",
+           "veterans_program": "Do you run PGA HOPE or any other golf program for veterans?"}
 
 
 def call_script(c: dict[str, Any], verify: list[str], req: GolferRequest) -> list[str]:
     """What to ask when you call, built in code from what the data doesn't know."""
     qs = [f"Can you tell me {v[:1].lower() + v[1:].rstrip('.?')}?" for v in verify if v]
-    qs += [EXTRA_Q[w] for w in req.wants if not (c.get("amenities") or {}).get(w)]
-    if req.needs.adaptive_cart and c.get("adaptive_cart") is None:
+    qs += [EXTRA_Q[w] for w in req.wants if not locator.has_extra(c, w)]
+    if req.needs.adaptive_cart and c.get("adaptive_equipment"):
+        qs.insert(0, "Can you reserve your adaptive cart for our tee time, and what paperwork do you need?")
+    elif req.needs.adaptive_cart and c.get("adaptive_cart") is None:
         qs.append("Do you have a single-rider or adaptive cart (like a SoloRider), or can I bring my own?")
+    limited = req.needs.walking_ability != "full" or req.needs.adaptive_cart
+    if limited and c.get("accessible_parking") is None:
+        qs.append("Is there accessible (handicap) parking close to the clubhouse and the 1st tee?")
+    if limited and c.get("clubhouse_step_free") is None:
+        qs.append("Is the clubhouse step-free, with accessible restrooms, and are there restrooms out on the course?")
     if req.needs.walking_ability != "full" and c.get("cart_near_greens") is None:
         qs.append("Can a cart with a medical or handicap flag drive close to the greens and tees?")
+    if limited:
+        qs.append("Are there cart-path-only days, and quieter tee times when we won't feel rushed?")
     if c.get("access") in (None, "unknown"):
         qs.insert(0, "Is the course open to the public, and do we need to book ahead?")
     if c.get("price_tier") is None:
         qs.append("What are your current green fees and cart fees?")
-    return list(dict.fromkeys(qs))[:6]
+    return list(dict.fromkeys(qs))[:8]
 
 
 async def search(message: str, visitor: str = "local", use_cache: bool = True,
@@ -210,6 +247,9 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
         if req.price_tier_max is None and profile.price_tier_max:
             req.price_tier_max = profile.price_tier_max
             profile_notes.append(f"price: up to {profile.price_tier_max}")
+        if profile.veteran and "veterans_program" not in req.wants:
+            req.wants.append("veterans_program")
+            profile_notes.append("veterans programs: shown")
         if req.holes == "either" and profile.holes != "either":
             req.holes = profile.holes
             profile_notes.append(f"holes: {profile.holes}")
@@ -302,6 +342,8 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
              "one_line": assessments[cid]["assessment"]["one_line"], "findings": assessments[cid]["assessment"]["findings"],
              "verify_with_course": assessments[cid]["assessment"]["verify_with_course"],
              "mapped_extras": sorted((by_id[cid].get("amenities") or {}).keys()),
+             "adaptive_equipment": by_id[cid].get("adaptive_equipment"),
+             "veterans_program": by_id[cid].get("veterans_program"),
              "island_needs_ferry": needs_ferry(by_id[cid], center)} for cid in ranked[:8]]
     t = time.perf_counter()
     if view:
@@ -351,6 +393,7 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
             "tee_time_search_url": "https://www.google.com/search?q=" + quote_plus(f"{c['name']} {c.get('town') or ''} {c['state']} tee times"),
             "map_detail": c.get("map_detail"), "verified_by_phone": c.get("verified_by_phone", False),
             "amenities": c.get("amenities") or {}, "wants": req.wants, "ferry": needs_ferry(c, center),
+            "access_info": access_info(c),
             "lat": c["lat"], "lon": c["lon"], "sources": c.get("sources", []),
         })
     picked = {r["course_id"] for r in recs}
