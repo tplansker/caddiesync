@@ -1,4 +1,4 @@
-"""One CaddieSync search, start to finish.
+"""One TrueCourse search, start to finish.
 
   golfer's message (+ saved profile)
     -> [code]  Input guard: clean_input + scan_for_injection
@@ -196,12 +196,12 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
 
     # ---- Safety nets before any AI call ----
     if guards.over_budget():
-        raise Blocked("CaddieSync has reached today's spending limit. Please try again tomorrow.")
+        raise Blocked("TrueCourse has reached today's spending limit. Please try again tomorrow.")
     if guards.rate_limited(visitor):
         raise Blocked("Too many searches in a short time. Please wait a few minutes.")
     text = guards.clean_input(message)
     if len(text) < 5:
-        raise Blocked("Tell CaddieSync a little about your round: where, who is playing, and any physical needs.")
+        raise Blocked("Tell TrueCourse a little about your round: where, who is playing, and any physical needs.")
     flags = guards.scan_for_injection(text)
     for f in flags:
         safety.append({"layer": "code: input scan", "event": f"Flagged: {f}"})
@@ -229,7 +229,7 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
                                                   "safety": safety + [{"layer": "provider: content filter",
                                                                        "event": "The AI provider refused the message as a likely attack."}]})
         raise Blocked("This message was blocked by the AI provider's safety filter as a likely attack"
-                      + (", and CaddieSync's own checks flagged it too" if flags else "")
+                      + (", and TrueCourse's own checks flagged it too" if flags else "")
                       + ". Please describe your round in your own words.") from None
     req: GolferRequest = result.output
     row = meter.add("profiler", result)
@@ -267,8 +267,8 @@ async def search(message: str, visitor: str = "local", use_cache: bool = True,
         home_pt = locator.resolve(home)
         center = home_pt or locator.resolve(DEFAULT_PLACE)
         where = f"{center['label']}" + (" (your home town)" if home_pt else "")
-        place_note = (f"CaddieSync couldn't find \"{req.near}\" on the map, so it searched around {where}." if req.near
-                      else f"No place given, so CaddieSync searched around {where}."
+        place_note = (f"TrueCourse couldn't find \"{req.near}\" on the map, so it searched around {where}." if req.near
+                      else f"No place given, so TrueCourse searched around {where}."
                       + ("" if home_pt else " Add a town or region to search elsewhere."))
     elif center.get("note"):
         place_note = center["note"]

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="TrueCourse">
+  <!-- TrueCourse mark: a compass ring with a cream "true north" point and a golf flag in the middle. -->
+  <circle cx="32" cy="33" r="20" fill="none" stroke="#c6f24e" stroke-width="4.5"/>
+  <path d="M32 1.5 37 12H27Z" fill="#f6f2e6"/>
+  <path d="M32 63.5 36.4 54.5H27.6Z M62 33 53 28.6V37.4Z M2 33 11 28.6V37.4Z" fill="#c6f24e"/>
+  <ellipse cx="31" cy="44.2" rx="9" ry="2.6" fill="#8fb83a"/>
+  <path d="M28 44V19.5" stroke="#f6f2e6" stroke-width="3" stroke-linecap="round"/>
+  <path d="M29.4 19 42.5 24.6 29.4 30.2Z" fill="#c6f24e"/>
+</svg>

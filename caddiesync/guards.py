@@ -74,9 +74,9 @@ def _unused_resolve_date(value: str | None, today: date, fallback: date) -> tupl
     except ValueError:
         day = None
     if day is None:
-        return fallback, f"No day given, so CaddieSync searched {nice_date(fallback)}."
+        return fallback, f"No day given, so TrueCourse searched {nice_date(fallback)}."
     if not 0 <= (day - today).days <= 30:
-        return fallback, f"Tee sheets only go 30 days out, so CaddieSync searched {nice_date(fallback)} instead."
+        return fallback, f"Tee sheets only go 30 days out, so TrueCourse searched {nice_date(fallback)} instead."
     return day, None
 
 

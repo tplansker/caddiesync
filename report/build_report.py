@@ -31,7 +31,7 @@ REAL_USER = {
     "who": "",            # e.g. "My dad, 72, bad left knee, plays about 20 rounds a year"
     "quote": "",          # what they said, in their words
     "before": "",         # how long it took them to find a course the old way (e.g. "about 40 minutes of calls")
-    "after": "",          # how long with CaddieSync (e.g. "under 2 minutes")
+    "after": "",          # how long with TrueCourse (e.g. "under 2 minutes")
     "outcome": "",        # did they play the course? how was it?
 }
 PHONE_CALLS = ""          # e.g. "I called 5 courses; 3 had cart access near greens, 1 had a SoloRider."
@@ -161,7 +161,7 @@ def todo(text: str) -> str:
 
 # ------------------------------------------------------------------------------------------------ diagram
 DIAGRAM = """
-<svg viewBox="0 0 980 470" role="img" aria-label="CaddieSync agent pipeline" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 980 470" role="img" aria-label="TrueCourse agent pipeline" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#3d5c10"/></marker>
     <style>
@@ -291,7 +291,7 @@ def section_title() -> str:
     return f"""
 <header class="cover">
   <p class="kicker">MGT 409 · AI Foundations for Managers · Final Project</p>
-  <h1>Caddie<span>Sync</span></h1>
+  <h1>True<span>Course</span></h1>
   <p class="one">An AI golf concierge that finds the New England golf courses a whole group can actually play, using hills,
   water carries and walking distances measured hole by hole, for a round near home or a golf trip.</p>
   <dl>
@@ -299,6 +299,8 @@ def section_title() -> str:
     <dt>Live app</dt><dd><a href="{LIVE}">{LIVE}</a></dd>
     <dt>GitHub</dt><dd><a href="{GITHUB}">{GITHUB}</a></dd>
   </dl>
+  <p class="small">Built under the working name CaddieSync and renamed TrueCourse on Nov 21, 2026, so the web address, the repository and some
+  early logs and screenshots still use the old name.</p>
   <div class="stats">
     <div class="stat"><b>{len(courses):,}</b><span>courses in six New England states</span></div>
     <div class="stat"><b>{holes_measured:,}</b><span>holes measured for hills, water, bunkers</span></div>
@@ -306,7 +308,7 @@ def section_title() -> str:
     <div class="stat"><b>{attacks.get('passed',0)}/{attacks.get('total',0)}</b><span>prompt-injection attacks stopped</span></div>
   </div>
 </header>
-{img('01_hero.jpg', 'Figure 1. The CaddieSync home page. Users describe who is playing, where, and what is hard for them, in plain words or by voice.')}
+{img('01_hero.jpg', 'Figure 1. The TrueCourse home page. Users describe who is playing, where, and what is hard for them, in plain words or by voice.')}
 """
 
 
@@ -344,12 +346,12 @@ def section_new() -> str:
 <tr><td>National Alliance for Accessible Golf search</td><td>Lists facilities with adaptive carts and programs</td><td>Self-reported by facilities; no measured terrain</td></tr>
 <tr><td>ChatGPT (tested below)</td><td>Friendly general advice</td><td>Has no course measurements; says so, or guesses</td></tr>
 </table>
-<p><b>I tested the plain-AI option directly.</b> I asked the same model CaddieSync uses (gpt-6-luna), without CaddieSync's data, for three flat,
+<p><b>I tested the plain-AI option directly.</b> I asked the same model TrueCourse uses (gpt-6-luna), without TrueCourse's data, for three flat,
 easy-walking courses near New Haven with total feet of climbing and holes with water. Its answer (excerpt):</p>
 <div class="quote">"{ans[:420]}…"</div>
-<p>It is honest that it lacks the data, and its one suggestion, Alling Memorial, is exactly the kind of guess that goes wrong: CaddieSync's measurements
+<p>It is honest that it lacks the data, and its one suggestion, Alling Memorial, is exactly the kind of guess that goes wrong: TrueCourse's measurements
 show Alling has <b>382 feet of climbing and 9 of 18 holes with a stretch steeper than a wheelchair ramp</b>.</p>
-<p><b>What CaddieSync does differently.</b></p>
+<p><b>What TrueCourse does differently.</b></p>
 <ul>
 <li><b>It measures, instead of guessing or relying on self-reporting.</b> An offline pipeline downloads every New England golf course from OpenStreetMap,
 where volunteers have drawn most courses hole by hole, and measures each hole against USGS elevation data: total climb, the steepest stretch compared with the
@@ -366,7 +368,7 @@ all from published sources. Accessible parking and a step-free clubhouse are tag
 <li><b>It works for trips.</b> Any town, region ("Cape Cod", "the Berkshires") or state; up to five courses, mapped, with booking links and directions.</li>
 </ul>
 <p class="small">Honest limits of the novelty: course <i>rules</i> (carts near greens, adaptive carts) are still mostly unknown, and tee-time availability is not
-included; CaddieSync links to each course's own booking page instead.</p>
+included; TrueCourse links to each course's own booking page instead.</p>
 """
 
 
@@ -374,7 +376,7 @@ def section_agents() -> str:
     c = AG
     return f"""
 <h2><span class="num">3</span>The agents</h2>
-<p>CaddieSync uses <b>three AI agents</b> and <b>five plain-code steps</b>. The design rule is simple: <b>the AI interprets and explains; code handles every
+<p>TrueCourse uses <b>three AI agents</b> and <b>five plain-code steps</b>. The design rule is simple: <b>the AI interprets and explains; code handles every
 fact, price, distance and safety decision.</b> No AI output can set a course fact, because the AI's structured outputs have no field for one.</p>
 <div class="diagram">{DIAGRAM}</div>
 <p class="small" style="margin-top:2px">Figure 2. How the agents are organized. Lime boxes are AI agents (gpt-6-luna); white boxes are plain code; the dark box is the
@@ -398,7 +400,7 @@ under half a cent. Using one model with fixed instructions per agent also maximi
 
 <h3>One real run, step by step</h3>
 <p>The query: <i>"Long weekend on Cape Cod with my wife. She's a beginner and we want easy, flat courses with a driving range to warm up and somewhere for lunch. 3 rounds."</i>
-The app shows each step in a "How CaddieSync decided" panel; the screenshots below are from that run, with the cache empty.</p>
+The app shows each step in a "How TrueCourse decided" panel; the screenshots below are from that run, with the cache empty.</p>
 <div class="grid2">
 {img('02_progress.jpg', 'Figure 3. While working, the app shows which agent is active.')}
 {img('07_trace_1.jpg', 'Figure 4. Steps 1–2: the input guard finds no attack; the Profiler turns the sentence into a structured search (Cape Cod, trip, 3 rounds, wants a range and food).')}
@@ -417,7 +419,7 @@ terrain = flat_only, forced_carries = avoid_all, shorter_course = true, skill = 
 <li><b>Pick check (code):</b> every pick is a real scored course; facts, map pins and links are copied from the database. Total: <b>$0.0029, 13.4 s.</b></li>
 </ol>
 <div class="grid2">
-{img('03_results_head.jpg', 'Figure 7. The result: a trip-plan headline, the needs CaddieSync understood, and a fact-check notice.')}
+{img('03_results_head.jpg', 'Figure 7. The result: a trip-plan headline, the needs TrueCourse understood, and a fact-check notice.')}
 {img('05_card.jpg', 'Figure 8. A result card. Measured facts, the wanted driving range (lime), and food marked "not on the map, ask".')}
 </div>
 """
@@ -478,7 +480,7 @@ Falcon 102) were also the Analyst's top two (100, 100), which suggests the short
 def section_safety() -> str:
     return f"""
 <h2 class="pb"><span class="num">5</span>Safety</h2>
-<p>CaddieSync holds health-related information (bad knees, wheelchairs) and runs on a paid API key, so I designed for three kinds of risk. Every defense below is tested;
+<p>TrueCourse holds health-related information (bad knees, wheelchairs) and runs on a paid API key, so I designed for three kinds of risk. Every defense below is tested;
 results are in <code>output/attack_results.json</code> and <code>tests/attack_test.py</code>.</p>
 <table>
 <tr><th style="width:18%">Risk</th><th>What could go wrong</th><th style="width:48%">Defenses (layered)</th></tr>
@@ -514,10 +516,10 @@ def section_impact() -> str:
     u = REAL_USER
     real = (f"""<div class="callout"><b>Real user test.</b> {esc(u['who'])}<br>
     {'<span class="quote" style="display:block">“' + esc(u['quote']) + '”</span>' if u['quote'] else ''}
-    {'<b>Before:</b> ' + esc(u['before']) + ' &nbsp; <b>With CaddieSync:</b> ' + esc(u['after']) if u['before'] else ''}
+    {'<b>Before:</b> ' + esc(u['before']) + ' &nbsp; <b>With TrueCourse:</b> ' + esc(u['after']) if u['before'] else ''}
     {'<br><b>Outcome:</b> ' + esc(u['outcome']) if u['outcome'] else ''}</div>""" if u["quote"] else
             todo("Have your dad (or another golfer with a physical limit) use the live app on a course decision he actually faces. Record: who he is; "
-                 "a quote in his words; how long finding a suitable course takes him today (calls, websites) vs. with CaddieSync; and whether the pick was right. "
+                 "a quote in his words; how long finding a suitable course takes him today (calls, websites) vs. with TrueCourse; and whether the pick was right. "
                  "Put it in REAL_USER at the top of report/build_report.py and rebuild. This is the evidence the rubric weighs most."))
     calls = (f'<div class="callout"><b>Phone verification.</b> {esc(PHONE_CALLS)}</div>' if PHONE_CALLS else
              todo("Optional but strong: call 4-6 courses with the app's 'What to ask when you call' list and record the answers (cart access near greens, "
@@ -538,7 +540,7 @@ average across all {len(courses):,} courses</td><td>My own test (hand research v
 {real}
 {calls}
 <p><b>Careful estimate of time saved.</b> Today, checking three candidate courses for a golfer with a bad knee means reading each website and reviews and calling the pro shop:
-roughly 10–15 minutes per course, or 30–45 minutes, and the answer is still mostly guesswork. CaddieSync returns a ranked, measured shortlist in under 20 seconds and narrows the
+roughly 10–15 minutes per course, or 30–45 minutes, and the answer is still mostly guesswork. TrueCourse returns a ranked, measured shortlist in under 20 seconds and narrows the
 phone call to the 2–4 questions the data can't answer. The bigger impact is not minutes but rounds: a group that can find a course everyone can enjoy keeps playing together.</p>
 <div class="grid2">
 {img('14_fox_check.jpg', 'Figure 13. An honest answer: Fox Hopyard is scored 30, "not a good fit", for a dad recovering from knee surgery, with the measurements behind it.')}
@@ -556,7 +558,7 @@ def section_limits() -> str:
 <li><b>Course rules are mostly unknown.</b> Cart access near greens and adaptive carts aren't on any map, so most scores are capped and come with "call to confirm".
 Adaptive equipment is verified for only {adaptive_n} courses, and ADA parking and clubhouse access for {ada_tagged}; the walks are straight-line distances from the middle of a mapped lot.</li>
 <li><b>Public vs. private is unknown for {unknown_share:.0%} of courses.</b> Known private clubs are excluded; the rest show "Access: check" and the call list asks first.</li>
-<li><b>No live tee times.</b> There is no public tee-time API for these courses, and scraping booking sites breaks their terms; CaddieSync links to each course's own booking page.
+<li><b>No live tee times.</b> There is no public tee-time API for these courses, and scraping booking sites breaks their terms; TrueCourse links to each course's own booking page.
 Price tiers are researched for only 12 featured facilities.</li>
 <li><b>Map quality varies.</b> {len(courses)-len(measured)} courses are outlines only; bunker depth isn't measured; water is detected only where mapped; elevation uses six points per hole from a
 10-meter dataset, so very short steep pitches can be missed or exaggerated.</li>
@@ -599,7 +601,7 @@ def build() -> str:
                     section_safety(), section_impact(), section_limits(), section_sources()])
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CaddieSync · Final Report · {AUTHOR}</title>
+<title>TrueCourse · Final Report · {AUTHOR}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,700..900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>{CSS}</style></head>

@@ -1,4 +1,4 @@
-"""Build CaddieSync's course database for all of New England from public map and elevation data.
+"""Build TrueCourse's course database for all of New England from public map and elevation data.
 
     python scripts/build_courses.py fetch       # 1. OpenStreetMap: courses, holes, greens, bunkers, water, cart paths, towns
     python scripts/build_courses.py elevation   # 2. USGS 3DEP elevation (via OpenTopoData) for points along every hole
@@ -32,7 +32,7 @@ import certifi
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
 STATES = {"CT": "Connecticut", "RI": "Rhode Island", "MA": "Massachusetts", "VT": "Vermont", "NH": "New Hampshire", "ME": "Maine"}
-UA = {"User-Agent": "CaddieSync (MGT 409 class project; course accessibility research)"}
+UA = {"User-Agent": "TrueCourse (MGT 409 class project; course accessibility research)"}
 CTX = ssl.create_default_context(cafile=certifi.where())
 OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"]
 

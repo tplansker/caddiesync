@@ -27,23 +27,24 @@ def shot(name: str, alt: str, cls: str = "shot") -> str:
     return f'<img class="{cls}" src="{b64(p)}" alt="{R.esc(alt)}">' if p.exists() else f'<div class="{cls} missing">{R.esc(name)}</div>'
 
 
-LOGO = b64(R.ROOT / "static" / "img" / "logo-dark-bg.png", "image/png")
+MARK = b64(R.ROOT / "static" / "img" / "mark.svg", "image/svg+xml")
+LOGO_HTML = f'<div class="logo"><img src="{MARK}" alt=""><span>True<b>Course</b></span></div>'
 T, S10K = R.T, R.SCEN[2]
 u = R.REAL_USER
 
 impact_user = (f'<div class="quote">“{R.esc(u["quote"])}”<span>— {R.esc(u["who"])}</span></div>'
-               + (f'<p class="small">Before: {R.esc(u["before"])} · With CaddieSync: {R.esc(u["after"])}</p>' if u["before"] else "")
+               + (f'<p class="small">Before: {R.esc(u["before"])} · With TrueCourse: {R.esc(u["after"])}</p>' if u["before"] else "")
                if u["quote"] else
                '<div class="todo">Real-user test goes here: your dad\'s quote and before/after time. Fill in REAL_USER in build_report.py and rebuild.</div>')
 
 SLIDES = [
     # 1. Title
     f"""<section class="title" data-background-color="#0f140f">
-  <img class="logo" src="{LOGO}" alt="CaddieSync">
+  <div role="img" aria-label="TrueCourse">{LOGO_HTML}</div>
   <h1>Golf for <span class="lime">every body.</span></h1>
   <p class="lede">An AI golf concierge that finds the New England courses your whole group can actually play, using hills, water and walking measured hole by hole.</p>
   <p class="meta">{R.AUTHOR} · MGT 409 AI Foundations for Managers<br><a href="{R.LIVE}">{R.LIVE.replace('https://', '')}</a></p>
-  <aside class="notes">One line: CaddieSync answers "can my group actually play this course?" with measurements, not guesses. Built for my dad, who has a bad knee.</aside>
+  <aside class="notes">One line: TrueCourse answers "can my group actually play this course?" with measurements, not guesses. Built for my dad, who has a bad knee.</aside>
 </section>""",
     # 2. Problem
     f"""<section>
@@ -170,7 +171,7 @@ SLIDES = [
 </section>""",
     # 10. Try it
     f"""<section class="title" data-background-color="#0f140f">
-  <img class="logo small" src="{LOGO}" alt="CaddieSync">
+  <div role="img" aria-label="TrueCourse" class="small-logo">{LOGO_HTML}</div>
   <h2 class="lime">Try it</h2>
   <p class="lede big"><a href="{R.LIVE}">{R.LIVE.replace('https://', '')}</a></p>
   <p class="meta">Free · no email needed · works by voice · large-text and high-contrast modes<br>Code: {R.GITHUB.replace('https://', '')}</p>
@@ -191,7 +192,11 @@ CSS = """
 .kicker { color: var(--lime); font: 700 0.55em Arial, sans-serif; letter-spacing: 0.16em; text-transform: uppercase; margin: 0 0 10px; }
 .lede { font-size: 0.85em; max-width: 26em; color: #e5e0d2; } .lede.big { font-size: 1.3em; font-weight: 700; }
 .meta { font-size: 0.6em; color: var(--muted); margin-top: 26px; }
-.logo { height: 92px; margin: 0 0 30px; } .logo.small { height: 70px; }
+.logo { display: flex; align-items: center; gap: 18px; margin: 0 0 30px; }
+.logo img { height: 92px; width: 92px; }
+.logo span { font: 800 1.6em Archivo, "Arial Black", Arial, sans-serif; font-stretch: 112%; color: var(--cream); letter-spacing: -0.01em; }
+.logo b { color: var(--lime); font-weight: 800; }
+.small-logo .logo img { height: 70px; width: 70px; } .small-logo .logo span { font-size: 1.25em; }
 .body { font-size: 0.66em; color: #e5e0d2; line-height: 1.45; } .body li { margin: 6px 0; } .tight li { margin: 4px 0; }
 .small { font-size: 0.52em; color: var(--muted); margin-top: 12px; }
 .stats4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 16px 0 22px; }
@@ -219,7 +224,7 @@ table.mini td { border-bottom: 1px solid rgba(246,242,230,0.15); padding: 8px 10
 def build() -> str:
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CaddieSync · Slides · {R.AUTHOR}</title>
+<title>TrueCourse · Slides · {R.AUTHOR}</title>
 <link rel="stylesheet" href="{REVEAL}/reset.min.css">
 <link rel="stylesheet" href="{REVEAL}/reveal.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

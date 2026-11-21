@@ -128,7 +128,7 @@ function accessBlock(r) {
         : `<p class="ada-none">Accessible parking, a step-free clubhouse and accessible restrooms aren't published for this course. They're on your call list.</p>`}
       <details class="ada-why"><summary>Why so many "ask"?</summary><p>Public golf courses are expected to follow the ADA's 2010 design standards
       (accessible parking, an accessible route to the clubhouse, and space for golf carts on the course), but no map or
-      public list shows which courses actually do. CaddieSync only says "yes" when a volunteer mapper or a published source does,
+      public list shows which courses actually do. TrueCourse only says "yes" when a volunteer mapper or a published source does,
       and adds the rest to your call list.</p></details></div>`;
 }
 
@@ -192,7 +192,7 @@ function render(d) {
       <h3>${shield} ${main.length ? `Safety nets caught ${main.length} thing${main.length === 1 ? "" : "s"}` : "Fact-checked"}</h3>
       ${main.length ? `<ul>${main.map(item).join("")}</ul>` : ""}
       ${facts.length ? `<details><summary>${facts.length} AI claim${facts.length === 1 ? "" : "s"} about facts the course data doesn't have were removed, or the score was capped</summary><ul>${facts.map(item).join("")}</ul></details>` : ""}</div>` : "";
-  const others = d.other_courses.length ? `<div class="sub"><h3>Other courses CaddieSync checked</h3><div class="rows">
+  const others = d.other_courses.length ? `<div class="sub"><h3>Other courses TrueCourse checked</h3><div class="rows">
       ${d.other_courses.map((o) => `<div class="row"><span><b>${esc(o.course_name)}</b> <span class="muted">· ${esc(o.town || "")}, ${esc(o.state)} · ${o.distance_mi} mi · ${esc(o.one_line)}</span></span>
         <span class="badge ${o.verdict}">${VERDICT[o.verdict]} · ${o.score}</span></div>`).join("")}</div></div>` : "";
   const trace = d.trace.map((t) => `<li><span class="n">${t.step}</span><div>
@@ -219,7 +219,7 @@ function render(d) {
     ${d.recommendations.length ? '<div id="results-map" class="results-map" role="region" aria-label="Map of your recommended courses"></div>' : ""}
     <div class="rec-list">${d.recommendations.map(recCard).join("")}</div>
     ${others}
-    <details class="panel"><summary>How CaddieSync decided · ${d.trace.length} steps</summary><div class="panel-body"><ol class="trace">${trace}</ol></div></details>
+    <details class="panel"><summary>How TrueCourse decided · ${d.trace.length} steps</summary><div class="panel-body"><ol class="trace">${trace}</ol></div></details>
     <details class="panel"><summary>Cost of this search · $${u.cost_usd.toFixed(4)}</summary><div class="panel-body">
       <div class="stats">
         <div class="stat"><div class="v">${tok(u.input_tokens)}</div><div class="k">input tokens</div></div>
@@ -263,7 +263,7 @@ function drawResultsMap(d) {
 
 async function copyPlan() {
   const d = lastResult; if (!d) return;
-  const lines = [`CaddieSync: ${d.headline}`, `${d.searched.group}`, ""];
+  const lines = [`TrueCourse: ${d.headline}`, `${d.searched.group}`, ""];
   d.recommendations.forEach((r, i) => {
     lines.push(`${i + 1}. ${r.course_name} (${r.town || ""}, ${r.state}) · ${r.distance_mi} mi · match ${r.accessibility_match_score}/100${r.price_tier ? ` · ${r.price_tier}` : ""}`);
     lines.push(`   ${r.why_it_fits}`);
@@ -497,7 +497,7 @@ $("#signout-btn").addEventListener("click", async () => {
 });
 
 $("#delete-btn").addEventListener("click", async () => {
-  if (!confirm("Delete your CaddieSync account and saved profile? This can't be undone.")) return;
+  if (!confirm("Delete your TrueCourse account and saved profile? This can't be undone.")) return;
   try {
     await api("/api/account", "DELETE");
     clearLocal(); Object.assign(acct, { user: null, profile: null, staleOwner: "" });

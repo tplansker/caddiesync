@@ -1,4 +1,4 @@
-"""CaddieSync web app: FastAPI backend + the single-page UI in static/.
+"""TrueCourse web app: FastAPI backend + the single-page UI in static/.
 
 Run locally:   python app.py          (then open http://127.0.0.1:8000)
 On Render:     uvicorn app:app --host 0.0.0.0 --port $PORT
@@ -26,7 +26,7 @@ from caddiesync.pipeline import Blocked, search
 from caddiesync.tools import load_courses, read_json
 
 log = logging.getLogger("caddiesync")
-app = FastAPI(title="CaddieSync", docs_url=None, redoc_url=None)
+app = FastAPI(title="TrueCourse", docs_url=None, redoc_url=None)
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 
 

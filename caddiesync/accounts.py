@@ -1,6 +1,6 @@
 """Free accounts and saved profiles, using only the Python standard library.
 
-- Username + password only. No email, so CaddieSync holds as little personal data as possible.
+- Username + password only. No email, so TrueCourse holds as little personal data as possible.
 - Passwords are hashed with scrypt and a random salt; only the hash is stored.
 - Sessions are random tokens in an HttpOnly cookie; the database stores only a SHA-256 of each token.
 - Profiles hold health-related needs, so a user can delete their account and everything with it.

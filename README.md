@@ -1,8 +1,8 @@
-# CaddieSync
+# TrueCourse
 
 **An AI golf concierge that finds New England golf courses your whole group can actually play.**
 
-Tell CaddieSync who is playing, what is hard for them, and where ("my 70-year-old dad has a bad knee and can't
+Tell TrueCourse who is playing, what is hard for them, and where ("my 70-year-old dad has a bad knee and can't
 walk steep hills, near New Haven", "a long weekend on Cape Cod with my wife, a beginner", "I play from a
 wheelchair, anything near Burlington VT?"). It searches every mapped golf course in Connecticut, Rhode Island,
 Massachusetts, Vermont, New Hampshire and Maine, using hills, water carries, bunkers and walking distances
@@ -109,7 +109,7 @@ sent to the AI, and repeat questions come from the cache.
   measured". Bunker depth and course rules (cart access near greens, adaptive carts) aren't on any map, so the
   app tells you what to ask. "No water" is only claimed for courses mapped in detail.
 - **Prices and booking.** Price tiers ($ under ~$40, $$ ~$40-75, $$$ ~$75-120, $$$$ over $120) are researched for
-  featured courses (`data/featured.json`, with sources) and shown as "not listed" elsewhere. CaddieSync links to
+  featured courses (`data/featured.json`, with sources) and shown as "not listed" elsewhere. TrueCourse links to
   each course's own booking page or a tee-time search instead of guessing availability.
 - **Credits.** Course maps (c) OpenStreetMap contributors, ODbL. Elevation: USGS 3D Elevation Program (public
   domain), via OpenTopoData. The app never calls these services at runtime; the data is built once.

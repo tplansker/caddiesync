@@ -3,16 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CaddieSync · Golf for every body</title>
+  <title>TrueCourse · Golf for every body</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <meta name="description" content="CaddieSync finds New England golf courses your whole group can actually play, measured hole by hole for hills, water and walking, for a round near home or a golf trip.">
+  <meta name="description" content="TrueCourse finds New England golf courses your whole group can actually play, measured hole by hole for hills, water and walking, for a round near home or a golf trip.">
   <meta name="theme-color" content="#0f140f">
-  <link rel="icon" href="/static/img/favicon.png">
+  <link rel="icon" href="/static/img/mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/static/img/favicon.png" sizes="64x64">
   <link rel="apple-touch-icon" href="/static/img/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=10">
+  <link rel="stylesheet" href="/static/styles.css?v=13">
   <script>
     // Apply saved text size / contrast before paint so the page never flashes the wrong size.
     try {
@@ -23,6 +24,15 @@
   </script>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="tc-mark" viewBox="0 0 64 64">
+    <circle cx="32" cy="33" r="20" fill="none" stroke="var(--lime)" stroke-width="4.5"/>
+    <path d="M32 1.5 37 12H27Z" fill="var(--cream)"/>
+    <path d="M32 63.5 36.4 54.5H27.6Z M62 33 53 28.6V37.4Z M2 33 11 28.6V37.4Z" fill="var(--lime)"/>
+    <ellipse cx="31" cy="44.2" rx="9" ry="2.6" fill="var(--green-500)"/>
+    <path d="M28 44V19.5" stroke="var(--cream)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M29.4 19 42.5 24.6 29.4 30.2Z" fill="var(--lime)"/>
+  </symbol></svg>
+
   <a class="skip" href="#find">Skip to the tee-time search</a>
 
   <div class="announce">
@@ -31,7 +41,7 @@
 
   <header class="site-header">
     <div class="wrap header-row">
-      <a class="brand" href="#top" aria-label="CaddieSync home"><img src="/static/img/logo-dark-bg.png" alt="CaddieSync" width="878" height="276"></a>
+      <a class="brand" href="#top" aria-label="TrueCourse home"><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#tc-mark"/></svg><span class="brand-word">True<span>Course</span></span></a>
       <nav class="main-nav" aria-label="Main">
         <a href="#find">Find courses</a>
         <a href="#who">Who it's for</a>
@@ -63,7 +73,7 @@
         <div class="hero-copy">
           <p class="kicker">AI golf concierge · New England</p>
           <h1 id="hero-title">Golf for<br><span class="lime">every body.</span></h1>
-          <p class="hero-lede">Bad knee? Can't do hills? Play from a wheelchair, or just starting out? Tell us who's playing and where, near home or on a trip. CaddieSync measures every course's hills, water and walking, then finds the ones your whole group will enjoy.</p>
+          <p class="hero-lede">Bad knee? Can't do hills? Play from a wheelchair, or just starting out? Tell us who's playing and where, near home or on a trip. TrueCourse measures every course's hills, water and walking, then finds the ones your whole group will enjoy.</p>
           <ul class="hero-stats" aria-label="At a glance">
             <li><b id="stat-courses">900+</b><span>New England courses</span></li>
             <li><b id="stat-holes">10k+</b><span>holes measured for hills &amp; water</span></li>
@@ -199,9 +209,9 @@
       <div class="wrap about-grid">
         <h2 id="about-title" class="display display-sm">Honest about the data</h2>
         <div>
-          <p><strong>Measured, not guessed.</strong> Course maps come from OpenStreetMap, where volunteers have drawn most New England courses hole by hole. CaddieSync measures every hole against USGS elevation data: total climbing, the steepest stretch compared with the 8.33% ADA limit for a wheelchair ramp, shots over water, bunkers by each green, the walk to the next tee, the walk from the parking lot to the 1st tee, and the walk from the 9th green back to the clubhouse (so you know whether you can stop after nine).</p>
-          <p><strong>Adaptive golf and veterans.</strong> A few courses have adaptive equipment like SoloRider single-rider carts or ParaGolfer standing chairs, and many host free PGA HOPE golf programs for veterans with disabilities. CaddieSync lists the ones it could verify from published sources and links to them. Look for the "Adaptive equipment" and "Veterans program" filters on the map.</p>
-          <p><strong>Honest about gaps.</strong> Accessible parking, a step-free clubhouse, accessible restrooms and course rules (cart access near greens, adaptive carts) are almost never on a map or a public list, so CaddieSync tells you exactly what to ask when you call. Price tiers ($ to $$$$) are researched for featured courses and marked unknown elsewhere. CaddieSync links you to each course's own booking page instead of guessing tee times.</p>
+          <p><strong>Measured, not guessed.</strong> Course maps come from OpenStreetMap, where volunteers have drawn most New England courses hole by hole. TrueCourse measures every hole against USGS elevation data: total climbing, the steepest stretch compared with the 8.33% ADA limit for a wheelchair ramp, shots over water, bunkers by each green, the walk to the next tee, the walk from the parking lot to the 1st tee, and the walk from the 9th green back to the clubhouse (so you know whether you can stop after nine).</p>
+          <p><strong>Adaptive golf and veterans.</strong> A few courses have adaptive equipment like SoloRider single-rider carts or ParaGolfer standing chairs, and many host free PGA HOPE golf programs for veterans with disabilities. TrueCourse lists the ones it could verify from published sources and links to them. Look for the "Adaptive equipment" and "Veterans program" filters on the map.</p>
+          <p><strong>Honest about gaps.</strong> Accessible parking, a step-free clubhouse, accessible restrooms and course rules (cart access near greens, adaptive carts) are almost never on a map or a public list, so TrueCourse tells you exactly what to ask when you call. Price tiers ($ to $$$$) are researched for featured courses and marked unknown elsewhere. TrueCourse links you to each course's own booking page instead of guessing tee times.</p>
         </div>
       </div>
     </section>
@@ -326,7 +336,7 @@
 
   <footer class="site-footer">
     <div class="wrap footer-grid">
-      <img src="/static/img/logo-dark-bg.png" alt="CaddieSync" class="footer-logo" width="878" height="276">
+      <div class="brand footer-brand" role="img" aria-label="TrueCourse"><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#tc-mark"/></svg><span class="brand-word">True<span>Course</span></span></div>
       <div class="footer-links">
         <a href="#find">Find courses</a>
         <a href="#who">Who it's for</a>
@@ -338,6 +348,6 @@
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script src="/static/app.js?v=10"></script>
+  <script src="/static/app.js?v=13"></script>
 </body>
 </html>

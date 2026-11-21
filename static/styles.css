@@ -1,4 +1,4 @@
-/* CaddieSync: near-black + lime + cream from the logo, big legible type, light reading sections. */
+/* TrueCourse: near-black + lime + cream from the logo, big legible type, light reading sections. */
 :root {
   --green-950: #080b08;
   --green-900: #0b0f0b;
@@ -102,7 +102,7 @@ html[data-contrast="high"] .announce { background: #000; border-bottom: 1px soli
 .header-row { display: flex; align-items: center; gap: 28px; min-height: 76px; }
 .brand img { height: 40px; width: auto; }
 .main-nav { display: flex; gap: 22px; margin-left: auto; white-space: nowrap; }
-@media (max-width: 1320px) { .main-nav { display: none; } .a11y-tools { margin-left: auto; } }
+@media (max-width: 1380px) { .main-nav { display: none; } .a11y-tools { margin-left: auto; } }
 .main-nav a { font: 700 0.82rem/1 var(--display); font-stretch: 125%; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: var(--ink); padding: 10px 0; border-bottom: 2px solid transparent; }
 .main-nav a:hover { border-bottom-color: var(--green); }
 .a11y-tools { display: flex; align-items: center; gap: 10px; }
@@ -536,3 +536,13 @@ html[data-contrast="high"] .rec-flag-poor { background: #000; color: #ff8a80; bo
 html[data-contrast="high"] .adaptive-box { background: #000; border-color: #ffe500; }
 html[data-contrast="high"] .ada-row { border-color: #fff; }
 .ada-none { font-size: 0.95rem; margin: 4px 0; border-left: 3px dashed var(--line); padding-left: 10px; }
+
+/* ---------- TrueCourse wordmark (inline SVG mark + type, follows theme and high contrast) ---------- */
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-mark { width: 40px; height: 40px; flex: none; }
+.brand-word { font-family: var(--display); font-weight: 800; font-stretch: 100%; font-size: 1.25rem; letter-spacing: -0.01em; color: var(--cream); line-height: 1; white-space: nowrap; }
+.brand-word span { color: var(--lime); }
+.footer-brand .brand-mark { width: 52px; height: 52px; }
+.footer-brand .brand-word { font-size: 1.7rem; }
+@media (max-width: 900px) { .site-header .brand { gap: 7px; } .site-header .brand-mark { width: 34px; height: 34px; } .site-header .brand-word { font-size: 1.05rem; font-stretch: 100%; } }
+@media (max-width: 460px) { .site-header .brand-word { display: none; } }
