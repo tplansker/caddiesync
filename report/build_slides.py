@@ -32,10 +32,11 @@ LOGO_HTML = f'<div class="logo"><img src="{MARK}" alt=""><span>True<b>Course</b>
 T, S10K = R.T, R.SCEN[2]
 u = R.REAL_USER
 
-impact_user = (f'<div class="quote">“{R.esc(u["quote"])}”<span>— {R.esc(u["who"])}</span></div>'
-               + (f'<p class="small">Before: {R.esc(u["before"])} · With TrueCourse: {R.esc(u["after"])}</p>' if u["before"] else "")
-               if u["quote"] else
-               '<div class="todo">Real-user test goes here: your dad\'s quote and before/after time. Fill in REAL_USER in build_report.py and rebuild.</div>')
+impact_user = (f'<div class="quote">“{R.esc(u["quote"] or u["request"])}”<span>— {R.esc(u["who"])}'
+               + (" (what they asked)" if not u["quote"] else "") + '</span></div>'
+               + f'<p class="small">Three flat picks in {R.esc(u["after"])}; {R.esc(u["outcome"].split(":")[0].lower())}.</p>'
+               if u["who"] else
+               '<div class="todo">Real-user test goes here. Fill in REAL_USER in build_report.py and rebuild.</div>')
 
 SLIDES = [
     # 1. Title
@@ -149,7 +150,7 @@ SLIDES = [
     </div>
     <div>{shot('14_fox_check.jpg', 'Fox Hopyard honest no')}</div>
   </div>
-  <aside class="notes">"Is Fox Hopyard too hilly for my dad after knee surgery?" gives 30/100, not a good fit, with the measurements. Real-user result goes here.</aside>
+  <aside class="notes">"Is Fox Hopyard too hilly for my dad after knee surgery?" gives 30/100, not a good fit, with the measurements. Real user: a 45-year-old friend with a prosthetic leg asked for flat courses with carts near the greens and got three flat picks near New Haven in about 20 seconds; it worked for them.</aside>
 </section>""",
     # 9. What's next
     """<section>

@@ -28,11 +28,16 @@ PRICES = json.loads((ROOT / "data" / "prices.json").read_text())["gpt-6-luna"]
 # ------------------------------------------------------------------------------------------------ fill in yourself
 # Leave quote empty until a real person has tried the app; the report then shows a clearly marked placeholder.
 REAL_USER = {
-    "who": "",            # e.g. "A friend who golfs with a physical limitation (describe it as they're comfortable)"
-    "quote": "",          # what they said, in their words
-    "before": "",         # how long it took them to find a course the old way (e.g. "about 40 minutes of calls")
-    "after": "",          # how long with TrueCourse (e.g. "under 2 minutes")
-    "outcome": "",        # did they play the course? how was it?
+    "who": "A 45-year-old friend who golfs with a prosthetic leg",
+    "request": "I have a prosthetic leg, am 45 years old, need something flat with cartpaths near the green",
+    "result": ("TrueCourse read it as flat only, cart close to the greens, and no deep bunkers; with no town given it searched "
+               "54 courses around New Haven and picked Orchards (Milford, 50 ft of climbing over the round), Short Beach "
+               "(Stratford, 51 ft) and Homewood Acres (Orange, 133 ft). Each scored 70: cart access near greens isn't published, "
+               "so the app capped the scores and put that question on the call list. About 20 seconds, under half a cent."),
+    "quote": "",          # leave empty unless the friend gave a quote in their own words
+    "before": "",         # how long finding a course takes them the old way, if known
+    "after": "about 20 seconds",
+    "outcome": "It worked for them: the picks fit what they need (as my friend reported to me).",
 }
 PHONE_CALLS = ""          # e.g. "I called 5 courses; 3 had cart access near greens, 1 had a SoloRider."
 
@@ -514,16 +519,17 @@ treats it as a clean block (or, for the Concierge, falls back to choosing the to
 
 def section_impact() -> str:
     u = REAL_USER
-    real = (f"""<div class="callout"><b>Real user test.</b> {esc(u['who'])}<br>
+    real = (f"""<div class="callout"><b>Real user test.</b> {esc(u['who'])} used TrueCourse for a real decision.<br>
+    {'<b>What they asked:</b> “' + esc(u['request']) + '”<br>' if u.get('request') else ''}
     {'<span class="quote" style="display:block">“' + esc(u['quote']) + '”</span>' if u['quote'] else ''}
-    {'<b>Before:</b> ' + esc(u['before']) + ' &nbsp; <b>With TrueCourse:</b> ' + esc(u['after']) if u['before'] else ''}
-    {'<br><b>Outcome:</b> ' + esc(u['outcome']) if u['outcome'] else ''}</div>""" if u["quote"] else
-            todo("Have your dad (or another golfer with a physical limit) use the live app on a course decision he actually faces. Record: who he is; "
-                 "a quote in his words; how long finding a suitable course takes him today (calls, websites) vs. with TrueCourse; and whether the pick was right. "
-                 "Put it in REAL_USER at the top of report/build_report.py and rebuild. This is the evidence the rubric weighs most."))
-    calls = (f'<div class="callout"><b>Phone verification.</b> {esc(PHONE_CALLS)}</div>' if PHONE_CALLS else
-             todo("Optional but strong: call 4-6 courses with the app's 'What to ask when you call' list and record the answers (cart access near greens, "
-                  "adaptive carts). Add a sentence to PHONE_CALLS and rebuild."))
+    {'<b>What TrueCourse did:</b> ' + esc(u['result']) + '<br>' if u.get('result') else ''}
+    {'<b>Before:</b> ' + esc(u['before']) + ' &nbsp; ' if u['before'] else ''}{'<b>With TrueCourse:</b> ' + esc(u['after']) + '<br>' if u['after'] else ''}
+    {'<b>Outcome:</b> ' + esc(u['outcome']) if u['outcome'] else ''}</div>""" if u["who"] else
+            todo("Have a golfer with a physical limit use the live app on a course decision they actually face. Record who they are, "
+                 "a quote in their words, how long finding a course takes them today vs. with TrueCourse, and whether the pick was right. "
+                 "Put it in REAL_USER at the top of report/build_report.py and rebuild."))
+    # Optional phone checks of the call list: shown only when PHONE_CALLS is filled in.
+    calls = f'<div class="callout"><b>Phone verification.</b> {esc(PHONE_CALLS)}</div>' if PHONE_CALLS else ""
     return f"""
 <h2><span class="num">6</span>Impact</h2>
 <table>
