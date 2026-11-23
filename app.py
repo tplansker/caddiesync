@@ -187,6 +187,14 @@ def api_delete_account(request: Request, response: Response) -> dict:
 
 # ---------- Search ----------
 
+def _key_rejected(e: BaseException) -> bool:
+    """True if this error (or every error in a fallback group) is an invalid/expired API key."""
+    if isinstance(e, ModelAuthenticationError):
+        return True
+    inner = getattr(e, "exceptions", None)
+    return bool(inner) and all(_key_rejected(x) for x in inner)
+
+
 @app.post("/api/search")
 async def api_search(body: SearchIn, request: Request) -> JSONResponse:
     profile = None
@@ -199,12 +207,12 @@ async def api_search(body: SearchIn, request: Request) -> JSONResponse:
         return JSONResponse({"error": str(e), "blocked": True}, status_code=429)
     except ConfigError as e:
         return JSONResponse({"error": str(e)}, status_code=500)
-    except ModelAuthenticationError:  # the AI key was rejected (expired or rotated); say so plainly, never show the key
-        log.error("search failed: the AI provider rejected PORTKEY_API_KEY (expired or rotated)")
-        return JSONResponse({"error": "The AI key for this site has expired, so searches are paused until it's renewed. "
-                                      "The course map and everything else still work. To run TrueCourse yourself, see the README."},
-                            status_code=503)
-    except Exception:  # never send stack traces (or anything that might contain a key) to the browser
+    except Exception as e:  # never send stack traces (or anything that might contain a key) to the browser
+        if _key_rejected(e):  # every configured AI key was rejected (expired or rotated); say so plainly
+            log.error("search failed: the AI provider rejected the API key(s) (expired or rotated)")
+            return JSONResponse({"error": "The AI key for this site has expired, so searches are paused until it's renewed. "
+                                          "The course map and everything else still work. To run TrueCourse yourself, see the README."},
+                                status_code=503)
         log.exception("search failed")
         return JSONResponse({"error": "Something went wrong while searching. Please try again."}, status_code=500)
 

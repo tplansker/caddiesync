@@ -49,20 +49,28 @@ def _portkey_client(key: str) -> Any:
 
 
 def build_model() -> Any:
-    """gpt-6-luna through Portkey (PORTKEY_API_KEY), or direct OpenAI (OPENAI_API_KEY) as a fallback."""
+    """gpt-6-luna through Portkey (PORTKEY_API_KEY), or direct OpenAI (OPENAI_API_KEY).
+
+    With both keys set, Portkey is tried first and OpenAI is used only if Portkey rejects its key (course keys
+    expire). Only an invalid-key error switches providers: a safety-filter block or any other error is not retried
+    elsewhere, so the provider's attack filter still stops attacks."""
     from openai import AsyncOpenAI
+    from pydantic_ai.exceptions import ModelAuthenticationError
+    from pydantic_ai.models.fallback import FallbackModel
     from pydantic_ai.models.openai import OpenAIResponsesModel
     from pydantic_ai.providers.openai import OpenAIProvider
 
     portkey_key = os.getenv("PORTKEY_API_KEY", "").strip()
     openai_key = os.getenv("OPENAI_API_KEY", "").strip()
+    if not (portkey_key or openai_key):
+        raise ConfigError("No API key found. Put PORTKEY_API_KEY (or OPENAI_API_KEY) in a .env file in this folder or one "
+                          "folder above (see .env.example).")
+    models = []
     if portkey_key:
-        client = _portkey_client(portkey_key)
-    elif openai_key:
-        client = AsyncOpenAI(api_key=openai_key, timeout=120)
-    else:
-        raise ConfigError("No API key found. Put PORTKEY_API_KEY in a .env file in this folder or one folder above (see .env.example).")
-    return OpenAIResponsesModel(MODEL_NAME, provider=OpenAIProvider(openai_client=client))
+        models.append(OpenAIResponsesModel(MODEL_NAME, provider=OpenAIProvider(openai_client=_portkey_client(portkey_key))))
+    if openai_key:
+        models.append(OpenAIResponsesModel(MODEL_NAME, provider=OpenAIProvider(openai_client=AsyncOpenAI(api_key=openai_key, timeout=120))))
+    return models[0] if len(models) == 1 else FallbackModel(*models, fallback_on=(ModelAuthenticationError,))
 
 
 def dollar_cost(input_tokens: int, cached_tokens: int, output_tokens: int, cache_write_tokens: int = 0) -> float:

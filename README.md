@@ -40,7 +40,7 @@ If port 8000 is busy: `PORT=8050 python app.py` (Windows PowerShell: `$env:PORT=
 | Variable | Needed | Notes |
 |---|---|---|
 | `PORTKEY_API_KEY` | yes | Course key; every AI call is `gpt-6-luna` through Portkey |
-| `OPENAI_API_KEY` | no | Only used if `PORTKEY_API_KEY` is missing (direct OpenAI) |
+| `OPENAI_API_KEY` | no | Direct OpenAI. Used if `PORTKEY_API_KEY` is missing, or automatically if Portkey rejects its key (course keys expire) |
 | `OPENAI_MODEL` | no | Defaults to `gpt-6-luna` |
 | `DAILY_BUDGET_USD` | no | Spending cap per day (default $2.00) |
 
