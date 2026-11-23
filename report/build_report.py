@@ -28,7 +28,7 @@ PRICES = json.loads((ROOT / "data" / "prices.json").read_text())["gpt-6-luna"]
 # ------------------------------------------------------------------------------------------------ fill in yourself
 # Leave quote empty until a real person has tried the app; the report then shows a clearly marked placeholder.
 REAL_USER = {
-    "who": "",            # e.g. "My dad, 72, bad left knee, plays about 20 rounds a year"
+    "who": "",            # e.g. "A friend who golfs with a physical limitation (describe it as they're comfortable)"
     "quote": "",          # what they said, in their words
     "before": "",         # how long it took them to find a course the old way (e.g. "about 40 minutes of calls")
     "after": "",          # how long with TrueCourse (e.g. "under 2 minutes")
@@ -328,8 +328,8 @@ that matter</b> (terrain, walkability, cart rules near greens, adaptive carts, f
 The closest thing to a directory, the National Alliance for Accessible Golf's search engine, depends on facilities listing themselves.</p>
 <p><b>What it costs.</b> The cost is mostly frustration and lost rounds rather than dollars. A wrong guess means a miserable or unsafe day:
 a 70-year-old with a bad knee facing a course with 400+ feet of climbing, or a beginner facing a 150-yard carry over water. The common workaround
-is to stop playing with the people who need the easier course. My own motivation is my dad, who still loves the game but has a bad knee. I wanted a
-tool that answers "which course near us, or on our trip, will he enjoy?" with facts instead of guesses.</p>
+is to stop playing with the people who need the easier course. I wanted a tool that answers "which course near us, or on our trip, will
+everyone in our group enjoy?" with facts instead of guesses.</p>
 """
 
 

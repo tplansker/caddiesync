@@ -51,7 +51,7 @@ table.mini td { border-bottom: 1px solid rgba(246,242,230,0.15); padding: 8px 10
   <h1>Golf for <span class="lime">every body.</span></h1>
   <p class="lede">An AI golf concierge that finds the New England courses your whole group can actually play, using hills, water and walking measured hole by hole.</p>
   <p class="meta">Tyler Plansker · MGT 409 AI Foundations for Managers<br><a href="https://caddiesync.onrender.com">caddiesync.onrender.com</a></p>
-  <aside class="notes">One line: TrueCourse answers "can my group actually play this course?" with measurements, not guesses. Built for my dad, who has a bad knee.</aside>
+  <aside class="notes">One line: TrueCourse answers "can my group actually play this course?" with measurements, not guesses.</aside>
 </section><section>
   <p class="kicker">The problem</p>
   <h2>"Can we actually play this course?"</h2>
@@ -143,10 +143,10 @@ table.mini td { border-bottom: 1px solid rgba(246,242,230,0.15); padding: 8px 10
   <p class="kicker">Tokenomics (real API counts)</p>
   <h2>Under half a cent a search</h2>
   <div class="stats4">
-    <div><b>$0.0037</b><span>first-time search · 38,327 in (26,938 cached) / 4,018 out</span></div>
-    <div><b>$0.0004</b><span>when course scores are cached</span></div>
+    <div><b>$0.0038</b><span>first-time search · 39,523 in (27,507 cached) / 4,104 out</span></div>
+    <div><b>$0.0006</b><span>when course scores are cached</span></div>
     <div class="hl"><b>92%</b><span>cache saving, identical scores</span></div>
-    <div><b>$73/mo</b><span>whole service at 10,000 users ($0.007/user)</span></div>
+    <div><b>$80/mo</b><span>whole service at 10,000 users ($0.008/user)</span></div>
   </div>
   <ul class="body">
     <li><b>Course Locator</b> in code: only the top 10 courses reach the AI, so cost stays flat at 851 courses (≈8× cheaper than analyzing all)</li>
@@ -160,7 +160,7 @@ table.mini td { border-bottom: 1px solid rgba(246,242,230,0.15); padding: 8px 10
     <div>
       <ul class="body tight">
         <li><b>Attacks:</b> code scanner, provider filter, data-only prompts, no fact fields in AI output</li>
-        <li><b>Invented facts:</b> fact check intervened <b>253×</b>; scores capped when data is missing</li>
+        <li><b>Invented facts:</b> fact check intervened <b>256×</b>; scores capped when data is missing</li>
         <li><b>Wrong actions / loops:</b> pick check, 3-request limit per agent, saved needs can't loosen</li>
         <li><b>Overspending:</b> $2/day budget, rate limits, max 12 fresh scores per search</li>
         <li><b>Privacy:</b> no email, hashed passwords, delete-my-data</li>
@@ -175,7 +175,7 @@ table.mini td { border-bottom: 1px solid rgba(246,242,230,0.15); padding: 8px 10
   <div class="cols">
     <div class="bignums">
       <div><b>1 → 5</b><span>of 8 accessibility facts per course</span></div>
-      <div><b>14 s</b><span>to a measured shortlist (vs. 30–45 min of reading and calls)</span></div>
+      <div><b>17 s</b><span>to a measured shortlist (vs. 30–45 min of reading and calls)</span></div>
       <div><b>4 + 29</b><span>courses with verified adaptive carts, and with PGA HOPE veterans programs</span></div>
       <div class="todo">Real-user test goes here: your dad's quote and before/after time. Fill in REAL_USER in build_report.py and rebuild.</div>
     </div>

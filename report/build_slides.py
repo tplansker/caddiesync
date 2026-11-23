@@ -44,7 +44,7 @@ SLIDES = [
   <h1>Golf for <span class="lime">every body.</span></h1>
   <p class="lede">An AI golf concierge that finds the New England courses your whole group can actually play, using hills, water and walking measured hole by hole.</p>
   <p class="meta">{R.AUTHOR} · MGT 409 AI Foundations for Managers<br><a href="{R.LIVE}">{R.LIVE.replace('https://', '')}</a></p>
-  <aside class="notes">One line: TrueCourse answers "can my group actually play this course?" with measurements, not guesses. Built for my dad, who has a bad knee.</aside>
+  <aside class="notes">One line: TrueCourse answers "can my group actually play this course?" with measurements, not guesses.</aside>
 </section>""",
     # 2. Problem
     f"""<section>
