@@ -19,6 +19,8 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
+from pydantic_ai.exceptions import ModelAuthenticationError
+
 from caddiesync import accounts, guards
 from caddiesync.config import DAILY_BUDGET_USD, MODEL_NAME, OUTPUT, ROOT, ConfigError
 from caddiesync.models import Profile
@@ -197,6 +199,11 @@ async def api_search(body: SearchIn, request: Request) -> JSONResponse:
         return JSONResponse({"error": str(e), "blocked": True}, status_code=429)
     except ConfigError as e:
         return JSONResponse({"error": str(e)}, status_code=500)
+    except ModelAuthenticationError:  # the AI key was rejected (expired or rotated); say so plainly, never show the key
+        log.error("search failed: the AI provider rejected PORTKEY_API_KEY (expired or rotated)")
+        return JSONResponse({"error": "The AI key for this site has expired, so searches are paused until it's renewed. "
+                                      "The course map and everything else still work. To run TrueCourse yourself, see the README."},
+                            status_code=503)
     except Exception:  # never send stack traces (or anything that might contain a key) to the browser
         log.exception("search failed")
         return JSONResponse({"error": "Something went wrong while searching. Please try again."}, status_code=500)

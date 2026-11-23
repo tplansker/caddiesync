@@ -9,7 +9,9 @@ Massachusetts, Vermont, New Hampshire and Maine, using hills, water carries, bun
 **measured hole by hole** from public map and elevation data. Then three AI agents pick and explain the best fits,
 with a booking link, directions, and a list of what to ask when you call.
 
-- **Live app: https://caddiesync.onrender.com** (free hosting: the first visit after a quiet spell takes ~30 seconds to wake up)
+- **Live app: https://caddiesync.onrender.com** (free hosting: the first visit after a quiet spell takes ~30 seconds to wake up).
+  The live site uses my course Portkey key, which the course rotates every few days. If a search says the key has
+  expired, run it locally with your own `.env` (below, about 3 minutes); everything else on the site keeps working.
 - GitHub: https://github.com/tplansker/caddiesync
 - Course: MGT 409 AI Foundations for Managers, final project
 
